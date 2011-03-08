@@ -1,0 +1,2630 @@
+------------------------------------------------------------
+revno: 3148
+committer: Hery Ramilison <hery.ramilison@oracle.com>
+branch nick: mysql-5.5.9-release
+timestamp: Wed 2011-01-19 23:27:25 +0100
+message:
+  Changed current copyright year to 2011
+------------------------------------------------------------
+revno: 3147 [merge]
+tags: clone-5.5.9-build
+committer: Evgeny Potemkin <epotemkin@mysql.com>
+branch nick: mysql-5.5-security
+timestamp: Wed 2011-01-12 20:32:38 +0300
+message:
+  Auto-merged.
+    ------------------------------------------------------------
+    revno: 3097.34.21 [merge]
+    committer: Evgeny Potemkin <epotemkin@mysql.com>
+    branch nick: 59330-bug-5.5-bugfixing
+    timestamp: Wed 2011-01-12 19:47:00 +0300
+    message:
+      Auto-merge.
+    ------------------------------------------------------------
+    revno: 3097.34.20
+    committer: Evgeny Potemkin <epotemkin@mysql.com>
+    branch nick: 59330-bug-5.5-bugfixing
+    timestamp: Wed 2011-01-12 15:58:47 +0300
+    message:
+      Bug#59330: Incorrect result when comparing an aggregate function with
+      TIMESTAMP.
+      
+      Item_cache::get_cache wasn't treating TIMESTAMP as a DATETIME value thus
+      returning string cache for items with TIMESTAMP type. This led to incorrect
+      TIMESTAMP -> INT conversion and to a wrong query result.
+      
+      Fixed by using Item::is_datetime function to check for DATETIME type group.
+------------------------------------------------------------
+revno: 3146 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Wed 2011-01-12 17:16:44 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 2661.712.12 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.1-security
+    timestamp: Wed 2011-01-12 17:08:52 +0200
+    message:
+      merge
+------------------------------------------------------------
+revno: 3145 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Wed 2011-01-12 17:10:12 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 3097.18.105 [merge]
+    committer: Alexey Botchkov <holyfoot@mysql.com>
+    branch nick: 55mrg
+    timestamp: Wed 2011-01-12 17:11:31 +0400
+    message:
+      merging.
+        ------------------------------------------------------------
+        revno: 2661.720.36
+        committer: Alexey Botchkov <holyfoot@mysql.com>
+        branch nick: 51mrg
+        timestamp: Wed 2011-01-12 17:02:41 +0400
+        message:
+          Bug #57321 crashes and valgrind errors from spatial types 
+                  Item_func_spatial_collection::fix_length_and_dec didn't call parent's method, so
+                  the maybe_null was set to '0' after it. But in this case the result was
+                  just NULL, that caused wrong behaviour.
+          
+          per-file comments:
+            mysql-test/r/gis.result
+          Bug #57321 crashes and valgrind errors from spatial types 
+                  test result updated.
+          
+            mysql-test/t/gis.test
+          Bug #57321 crashes and valgrind errors from spatial types 
+                  test case added.
+            sql/item_geofunc.h
+          Bug #57321 crashes and valgrind errors from spatial types 
+                  Item_func_geometry::fix_length_and_dec() called in
+                  Item_func_spatial_collection::fix_length_and_dec().
+    ------------------------------------------------------------
+    revno: 3097.18.104 [merge]
+    committer: Dmitry Lenev <Dmitry.Lenev@oracle.com>
+    branch nick: mysql-5.5-mrg
+    timestamp: Wed 2011-01-12 16:28:33 +0300
+    message:
+      Merged fix for bug #58499 "DEFINER-security view selecting from
+      INVOKER-security view access check wrong" into mysql-5.5 tree.
+        ------------------------------------------------------------
+        revno: 2661.720.35
+        committer: Dmitry Lenev <Dmitry.Lenev@oracle.com>
+        branch nick: mysql-5.1-58499-2
+        timestamp: Wed 2011-01-12 16:08:30 +0300
+        message:
+          Fix for bug #58499 "DEFINER-security view selecting from 
+          INVOKER-security view access check wrong".
+          
+          When privilege checks were done for tables used from an 
+          INVOKER-security view which in its turn was used from 
+          a DEFINER-security view connection's active security
+          context was incorrectly used instead of security context
+          with privileges of the second view's creator.
+          
+          This meant that users which had enough rights to access
+          the DEFINER-security view and as result were supposed to 
+          be able successfully access it were unable to do so in 
+          cases when they didn't have privileges on underlying tables 
+          of the INVOKER-security view.
+          
+          This problem was caused by the fact that for INVOKER-security
+          views TABLE_LIST::security_ctx member for underlying tables
+          were set to 0 even in cases when particular view was used from 
+          another DEFINER-security view. This meant that when checks of
+          privileges on these underlying tables was done in
+          setup_tables_and_check_access() active connection security 
+          context was used instead of context corresponding to the 
+          creator of caller view.
+          
+          This fix addresses the problem by ensuring that underlying
+          tables of an INVOKER-security view inherit security context
+          from the view and thus correct security context is used for
+          privilege checks on underlying tables in cases when such view 
+          is used from another view with DEFINER-security.
+    ------------------------------------------------------------
+    revno: 3097.18.103
+    committer: Ole John Aske <ole.john.aske@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Wed 2011-01-12 13:15:22 +0100
+    message:
+      Fix for bug#58818: Incorrect result for IN/ANY subquery
+      
+      If the ::single_value_transformer() find an existing HAVING condition it used
+      to do the transformation:
+                  
+        1) HAVING cond -> (HAVING Cond) AND (cond_guard (Item_ref_null_helper(...))
+            
+      As the AND condition in 1) is Mc'Carty evaluated, the
+      right side of the AND cond should be executed only if the 
+      original 'HAVING evaluated' to true.
+            
+      However, as we failed to set 'top_level' for the tranformed HAVING condition,
+      'abort_on_null' was FALSE after transformation. An
+      UNKNOWN having condition will then not terminate evaluation of the
+      transformed having condition, and we incorrectly continued
+      into the Item_ref_null_helper() part.
+    ------------------------------------------------------------
+    revno: 3097.18.102 [merge]
+    committer: Martin Hansson <martin.hansson@oracle.com>
+    branch nick: 5.5
+    timestamp: Wed 2011-01-12 10:31:41 +0100
+    message:
+      Merge of fix for Bug#58207.
+        ------------------------------------------------------------
+        revno: 2661.720.34
+        committer: Martin Hansson <martin.hansson@oracle.com>
+        branch nick: 5.1
+        timestamp: Wed 2011-01-12 09:55:31 +0100
+        message:
+          Bug#58207: invalid memory reads when using default column value and 
+          tmptable needed
+          
+          The function DEFAULT() works by modifying the the data buffer pointers (often
+          referred to as 'record' or 'table record') of its argument. This modification
+          is done during name resolution (fix_fields().) Unfortunately, the same
+          modification is done when creating a temporary table, because default values
+          need to propagate to the new table.
+          
+          Fixed by skipping the pointer modification for fields that are arguments to
+          the DEFAULT function.
+    ------------------------------------------------------------
+    revno: 3097.18.101 [merge]
+    committer: Dmitry Shulga <Dmitry.Shulga@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Tue 2011-01-11 21:26:31 +0600
+    message:
+      Auto-merge mysql-5.1 -> mysql-5.5 for bug#58887.
+        ------------------------------------------------------------
+        revno: 2661.720.33
+        committer: Dmitry Shulga <Dmitry.Shulga@oracle.com>
+        branch nick: mysql-5.1-bug58887
+        timestamp: Tue 2011-01-11 21:18:25 +0600
+        message:
+          Fixed Bug#58887	- server not throwing "Packet too large" error
+          if max_allowed_packet >= 16M.
+          
+          This bug was introduced by patch for bug#42503.
+          
+          This patch restores behaviour that there was before patch
+          for bug#42503 was applied.
+    ------------------------------------------------------------
+    revno: 3097.18.100 [merge]
+    committer: Davi Arnaut <davi.arnaut@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Tue 2011-01-11 11:53:50 -0200
+    message:
+      Merge of mysql-5.1 into mysql-5.5.
+        ------------------------------------------------------------
+        revno: 2661.720.32
+        committer: Davi Arnaut <davi.arnaut@oracle.com>
+        branch nick: 42054-5.1
+        timestamp: Tue 2011-01-11 11:44:38 -0200
+        message:
+          Bug#42054: SELECT CURDATE() is returning bad value
+          
+          The problem from a user point of view was that on Solaris the
+          time related functions (e.g. NOW(), SYSDATE(), etc) would always
+          return a fixed time.
+          
+          This bug was happening due to a logic in the time retrieving
+          wrapper function which would only call the time() function every
+          half second. This interval between calls would be calculated
+          using the gethrtime() and the logic relied on the fact that time
+          returned by it is monotonic.
+          
+          Unfortunately, due to bugs in the gethrtime() implementation,
+          there are some cases where the time returned by it can drift
+          (See Solaris bug id 6600939), potentially causing the interval
+          calculation logic to fail.
+          
+          The solution is to retrieve the correct time whenever a drift in
+          the time returned by gethrtime() is detected. That is, do not
+          use the cached time whenever the values (previous and current)
+          returned by gethrtime() are not monotonically increasing.
+    ------------------------------------------------------------
+    revno: 3097.18.99 [merge]
+    committer: Jan Wedvik <jan.wedvik@sun.com>
+    branch nick: mysql-5.5
+    timestamp: Tue 2011-01-11 12:33:28 +0100
+    message:
+      Merge of fix for bug#58553, "Queries with pushed conditions causes 'explain 
+      extended' to crash mysqld" (see http://lists.mysql.com/commits/128409).
+        ------------------------------------------------------------
+        revno: 2661.720.31
+        committer: Jan Wedvik <jan.wedvik@sun.com>
+        branch nick: mysql-5.1
+        timestamp: Tue 2011-01-11 12:09:54 +0100
+        message:
+          Fix for bug#58553, "Queries with pushed conditions causes 'explain extended' 
+          to crash mysqld". 
+                
+          handler::pushed_cond was not always properly reset when table objects where
+          recycled via the table cache.
+                
+          handler::pushed_cond is now set to NULL in handler::ha_reset(). This should 
+          prevent pushed conditions from (incorrectly) re-apperaring in later queries.
+    ------------------------------------------------------------
+    revno: 3097.18.98
+    committer: Magne Mahre <magne.mahre@oracle.com>
+    branch nick: mysql-5.5-nothread
+    timestamp: Tue 2011-01-11 10:07:37 +0100
+    message:
+      Remove configuration preprocessor symbols 'THREAD'
+      and 'THREAD_SAFE_CLIENT'.
+        
+      As of MySQL 5.5, we no longer support non-threaded
+      builds.   This patch removes all references to the
+      obsolete THREAD and THREAD_SAFE_CLIENT preprocessor
+      symbols.  These were used to distinguish between
+      threaded and non-threaded builds.
+    ------------------------------------------------------------
+    revno: 3097.18.97
+    committer: Anitha Gopi <anitha.gopi@sun.com>
+    branch nick: mysql-5.5
+    timestamp: Tue 2011-01-11 13:31:51 +0530
+    message:
+      Bug#47792 : Moving test out of disabled state since the problem is not seen anymore
+    ------------------------------------------------------------
+    revno: 3097.18.96 [merge]
+    committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+    branch nick: topush-5.5_2
+    timestamp: Mon 2011-01-10 17:02:54 +0100
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 3097.41.2 [merge]
+        committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+        branch nick: topush-5.5
+        timestamp: Mon 2011-01-10 16:13:12 +0100
+        message:
+          merge
+        ------------------------------------------------------------
+        revno: 3097.41.1 [merge]
+        committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+        branch nick: topush-5.5
+        timestamp: Mon 2011-01-10 15:08:31 +0100
+        message:
+          Manual merge from 5.1
+            ------------------------------------------------------------
+            revno: 2661.720.30 [merge]
+            committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+            branch nick: topush-5.1_2
+            timestamp: Mon 2011-01-10 12:56:27 +0100
+            message:
+              merge
+                ------------------------------------------------------------
+                revno: 2661.733.2 [merge]
+                committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+                branch nick: topush-5.1
+                timestamp: Mon 2011-01-10 12:53:24 +0100
+                message:
+                  merge
+                    ------------------------------------------------------------
+                    revno: 2661.714.17
+                    committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+                    branch nick: b56380-51-bt
+                    timestamp: Wed 2010-12-01 12:20:46 +0100
+                    message:
+                      Bug#56380: valgrind memory leak warning from partition tests
+                      
+                      There could be memory leaks if ALTER ... PARTITION command fails.
+                      
+                      Problem was that the list of items to free was not set in
+                      the partition info structure when fix_partition_func call failed
+                      during ALTER ... PARTITION.
+                      
+                      Solved by always setting the list in the partition info struct.
+                ------------------------------------------------------------
+                revno: 2661.733.1 [merge]
+                committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+                branch nick: topush-5.1
+                timestamp: Tue 2011-01-04 14:13:20 +0100
+                message:
+                  merge
+                    ------------------------------------------------------------
+                    revno: 2661.732.2
+                    committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+                    branch nick: b54483-51-bt_2
+                    timestamp: Wed 2010-12-22 15:45:17 +0100
+                    message:
+                      Bug#54483: valgrind errors when making warnings for
+                      multiline inserts into partition
+                      Bug#57071: EXTRACT(WEEK from date_col) cannot be
+                      allowed as partitioning function
+                      
+                      Renamed function according to reviewers comments.
+                    ------------------------------------------------------------
+                    revno: 2661.732.1
+                    committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+                    branch nick: b54483-51-bt_2
+                    timestamp: Wed 2010-12-22 10:50:36 +0100
+                    message:
+                      Bug#54483: valgrind errors when making warnings for multiline inserts into partition
+                      Bug#57071: EXTRACT(WEEK from date_col) cannot be allowed as partitioning function
+                      
+                      There were functions allowed as partitioning functions
+                      that implicit allowed cast. That could result in unacceptable
+                      behaviour.
+                      
+                      Solution was to check that the arguments of date and time functions
+                      have allowed types (field and date/datetime/time depending on function).
+    ------------------------------------------------------------
+    revno: 3097.18.95
+    committer: Matthias Leich <matthias.leich@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Mon 2011-01-10 15:53:06 +0100
+    message:
+      The fix for Bug#58414 affecting the test show_check is pushed.
+      Remove the test from defaults.experimental.
+    ------------------------------------------------------------
+    revno: 3097.18.94
+    committer: Magne Mahre <magne.mahre@oracle.com>
+    branch nick: mysql-5.5-51631
+    timestamp: Mon 2011-01-10 15:18:20 +0100
+    message:
+      Bug#51631 general-log flag doesn't accept "on" as a value in
+                the my.cnf, works as command
+            
+      Different parsing mechanisms are used for command line/my.cnf 
+      options  and the SQL commands.  The former only accepted
+      numeric arguments, and regarded all numbers different from 0 
+      as 'true'.  Any other argument was parsed as 'false' .
+            
+      This patch adds the words 'true' and 'on' as valid truth
+      values for boolean option arguments.
+            
+      A test case is not provided, as the fix is simple and
+      does not warrant a separate test file (no existing
+      suitable test file was found)
+      
+      (backported from mysql-trunk)
+    ------------------------------------------------------------
+    revno: 3097.18.93
+    committer: Jon Olav Hauglid <jon.hauglid@oracle.com>
+    branch nick: mysql-5.5-bug58933
+    timestamp: Mon 2011-01-10 14:12:23 +0100
+    message:
+      Bug #58933 Assertion `thd- >is_error()' fails on shutdown with ongoing
+                 OPTIMIZE TABLE
+      
+      OPTIMIZE TABLE for InnoDB tables is handled as recreate + analyze.
+      The triggered assert checked that an error had been reported if either
+      recreate or analyze failed. However the assert failed to take into
+      account that they could have failed because OPTIMIZE TABLE had been
+      victim of KILL QUERY, KILL CONNECTION or server shutdown.
+      
+      This patch adjusts the assert to take this possibility into account.
+      The problem was only noticeable on debug versions of the server.
+      
+      Test case added to innodb_mysql_sync.test.
+------------------------------------------------------------
+revno: 3144 [merge]
+committer: Oystein Grovlen <oystein.grovlen@oracle.com>
+branch nick: mysql-5.5-security
+timestamp: Wed 2011-01-12 11:27:31 +0100
+message:
+  Merge fix for Bug#59211 to mysql-5.5-security
+    ------------------------------------------------------------
+    revno: 2661.712.11
+    committer: Oystein Grovlen <oystein.grovlen@oracle.com>
+    branch nick: mysql-5.1-security
+    timestamp: Wed 2011-01-12 10:37:15 +0100
+    message:
+      Bug#59211: Select Returns Different Value for min(year) Function
+      
+      get_year_value() contains code to convert 2-digits year to
+      4-digits.  The fix for Bug#49910 added a check on the size of
+      the underlying field so that this conversion is not done for
+      YEAR(4) values. (Since otherwise one would convert invalid
+      YEAR(4) values to valid ones.)
+      
+      The existing check does not work when Item_cache is used, since
+      it is not detected when the cache is based on a Field.  The
+      reported change in behavior is due to Bug#58030 which added
+      extra cached items in min/max computations.
+      
+      The elegant solution would be to implement
+      Item_cache::real_item() to return the underlying Item.
+      However, some side effects are observed (change in explain
+      output) that indicates that such a change is not straight-
+      forward, and definitely not appropriate for an MRU.
+      
+      Instead, a Item_cache::field() method has been added in order
+      to get access to the underlying field.  (This field() method
+      eliminates the need for Item_cache::eq_def() used in
+      test_if_ref(), but in order to limit the scope of this fix,
+      that code has been left as is.)
+------------------------------------------------------------
+revno: 3143
+committer: Alfranio Correia <alfranio.correia@oracle.com>
+branch nick: mysql-5.5-security
+timestamp: Wed 2011-01-12 09:31:32 +0000
+message:
+  BUG#59267 LOAD DATA LOCAL INFILE not executed on slave with SBR
+  
+  On windows, an #endif in a wrong place was causing an early
+  return from mysql_load and thus the LOAD DATA LOCAL was not
+  executed. This problem was fixed by moving the #endif to the
+  right place.
+  
+  The following code was missing
+      
+    if ((stat_info.st_mode & S_IFIFO) == S_IFIFO)
+      is_fifo = 1;
+  
+  which is required to properly configure and read from the
+  IO_CACHE when a named pipe is used. So it was re-introduced
+  before the #endif.
+------------------------------------------------------------
+revno: 3142 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Mon 2011-01-10 15:17:00 +0200
+message:
+  automerg
+    ------------------------------------------------------------
+    revno: 2661.712.10 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.1-security
+    timestamp: Mon 2011-01-10 15:08:33 +0200
+    message:
+      merge
+------------------------------------------------------------
+revno: 3141 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Mon 2011-01-10 15:09:57 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 3097.18.92
+    committer: Magne Mahre <magne.mahre@oracle.com>
+    branch nick: mysql-5.5-58970
+    timestamp: Mon 2011-01-10 13:43:12 +0100
+    message:
+      Bug#58970 Problem Subquery (without referencing a table) 
+                and Order By
+            
+      When having a UNION statement in a subquery, with no
+      referenced tables (or only a reference to the virtual
+      table 'dual'), the UNION did not allow an ORDER BY clause.
+            
+            i.e:
+                SELECT(SELECT 1 AS a UNION 
+                       SELECT 0 AS a 
+                       ORDER BY a) AS b  or
+                SELECT(SELECT 1 AS a FROM dual UNION 
+                       SELECT 0 as a 
+                       ORDER BY a) AS b
+            
+            
+      In addition, an ORDER BY / LIMIT clause was not accepted
+      in subqueries even for single SELECT statements with no 
+      referenced tables (or with 'dual' as table reference)
+            
+         i.e: 
+            SELECT(SELECT 1 AS a ORDER BY a) AS b  or
+            SELECT(SELECT 1 AS a FROM dual ORDER BY a) AS b
+            
+      The fix was to allow an optional ORDER BY/LIMIT clause to
+      the grammar for these cases.
+            
+      See also: Bug#57986
+    ------------------------------------------------------------
+    revno: 3097.18.91
+    committer: Magne Mahre <magne.mahre@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Mon 2011-01-10 13:16:50 +0100
+    message:
+      Bug#57986 ORDER BY clause is not used after a UNION, 
+                if embedded in a SELECT
+                  
+      An ORDER BY clause was bound to the incorrect
+      (sub-)statement when used in a UNION context.
+                  
+      In a query like:
+      SELECT * FROM a UNION SELECT * FROM b ORDER BY c
+      the result of SELECT * FROM b is sorted, and then
+      combined with a.  The correct behaviour is that
+      the ORDER BY clause should be applied on the
+      final set.   Similar behaviour was seen on LIMIT
+      clauses as well.
+                  
+      In a UNION statement, there will be a select_lex
+      object for each of the two selects, and a 
+      select_lex_unit object that describes the UNION
+      itself.  Similarly, the same behaviour was also
+      seen on derived tables.
+                  
+      The bug was caused by using a grammar rule for
+      ORDER BY and LIMIT that bound these elements
+      to thd->lex->current_select, which points to the
+      last of the two selects, instead of to the 
+      fake_select_lex member of the master select_lex_unit
+      object.
+    ------------------------------------------------------------
+    revno: 3097.18.90 [merge]
+    committer: Vasil Dimov <vasil.dimov@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Sat 2011-01-08 17:05:08 +0200
+    message:
+      Merge mysql-5.1 -> mysql-5.5 (empty)
+        ------------------------------------------------------------
+        revno: 2661.720.29 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.1
+        timestamp: Sat 2011-01-08 16:59:23 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.1
+    ------------------------------------------------------------
+    revno: 3097.18.89 [merge]
+    committer: Vasil Dimov <vasil.dimov@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Sat 2011-01-08 17:00:48 +0200
+    message:
+      Merge mysql-5.5-innodb -> mysql-5.5
+        ------------------------------------------------------------
+        revno: 2995.37.110 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Sat 2011-01-08 16:52:36 +0200
+        message:
+          Null merge mysql-5.1-innodb -> mysql-5.5-innodb
+          (irrelevant for 5.5 and up)
+            ------------------------------------------------------------
+            revno: 2661.523.337
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Sat 2011-01-08 16:51:19 +0200
+            message:
+              Increment InnoDB Plugin version from 1.0.14 to 1.0.15.
+              InnoDB Plugin 1.0.14 has been released with MySQL 5.1.54.
+        ------------------------------------------------------------
+        revno: 2995.37.109 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2011-01-07 16:56:32 +0200
+        message:
+          Null merge mysql-5.1-innodb -> mysql-5.5-innodb
+          
+          This change is relevant only for 5.1.
+            ------------------------------------------------------------
+            revno: 2661.523.336
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Fri 2011-01-07 16:52:44 +0200
+            message:
+              Followup to vasil.dimov@oracle.com-20110107091222-q23qpb5skev0j9gc
+              
+              Do not use nested AC_CHECK_FUNC() because they result in:
+              
+              ./configure: line 52688: syntax error: unexpected end of file
+              
+              (which happens only on some platforms and does not happen on others,
+              I have no idea what is the reason for this)
+        ------------------------------------------------------------
+        revno: 2995.37.108 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2011-01-07 13:56:50 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb (empty)
+            ------------------------------------------------------------
+            revno: 2661.523.335 [merge]
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Fri 2011-01-07 13:46:21 +0200
+            message:
+              Merge mysql-5.1 -> mysql-5.1-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.107
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2011-01-07 13:54:07 +0200
+        message:
+          Fix InnoDB style after mikael@dator8-20101217205840-i7ltx8m6z3uc42kh
+        ------------------------------------------------------------
+        revno: 2995.37.106 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2011-01-07 13:49:06 +0200
+        message:
+          Merge mysql-5.5 -> mysql-5.5-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.105 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2011-01-07 11:40:38 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb
+          
+          This is a null-merge because Bug#59327 is present only in 5.1
+            ------------------------------------------------------------
+            revno: 2661.523.334
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Fri 2011-01-07 11:12:22 +0200
+            message:
+              Fix Bug#59327 Fix autoconf usage for innodb_plugin
+              
+              AC_CHECK_FUNCS(f1 f2 f3, ACTION_IF_PRESENT)
+              ACTION_IF_PRESENT is executed if any of f1, f2 or f3 is present.
+              Fix this misusage, we want the action to be executed if all of the
+              functions are present.
+        ------------------------------------------------------------
+        revno: 2995.37.104 [merge]
+        committer: Jimmy Yang <jimmy.yang@oracle.com>
+        branch nick: mysql-trunk-innodb
+        timestamp: Thu 2011-01-06 19:50:49 -0800
+        message:
+          merge from mysql-5.1-innodb to mysql-5.5-innodb
+            ------------------------------------------------------------
+            revno: 2661.523.333
+            committer: Jimmy Yang <jimmy.yang@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Thu 2011-01-06 19:36:20 -0800
+            message:
+              Fix Bug #55397 cannot select from innodb_trx when trx_query contains blobs
+              that aren't strings
+              
+              rb://560 approved by Sunny Bains
+        ------------------------------------------------------------
+        revno: 2995.37.103
+        committer: Sunny Bains <Sunny.Bains@Oracle.Com>
+        branch nick: 5.5
+        timestamp: Thu 2011-01-06 21:41:30 +1100
+        message:
+          Fix Bug #58653 - Sporadic crash due to assertion failure 0 == space->n_pending_flushes
+                
+          Check whether the master and purge thread are active after creating them. Do
+          not proceed until both threads have started. We do this by checking whether a
+          slot has been reserved by both the respective threads.
+                
+          Add srv_thread_has_reserved_slot() returns slot no or ULINT_UNDEFINED.
+                
+          rb://536 Approved by Jimmy
+        ------------------------------------------------------------
+        revno: 2995.37.102 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Thu 2011-01-06 09:19:02 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb
+            ------------------------------------------------------------
+            revno: 2661.523.332
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Thu 2011-01-06 09:12:53 +0200
+            message:
+              (InnoDB Plugin) Fix Bug#59303 Correct URL in crash message
+              
+              old URL: http://dev.mysql.com/doc/refman/5.1/en/forcing-recovery.html
+              new URL: http://dev.mysql.com/doc/refman/5.1/en/forcing-innodb-recovery.html
+              
+              Notice that there is a redirect from the old URL to the new URL, so visiting
+              the old URL does not give "page not found" error.
+        ------------------------------------------------------------
+        revno: 2995.37.101 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Thu 2011-01-06 09:15:48 +0200
+        message:
+          Null merge mysql-5.1-innodb -> mysql-5.5-innodb
+            ------------------------------------------------------------
+            revno: 2661.523.331
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Thu 2011-01-06 09:05:45 +0200
+            message:
+              (Builtin InnoDB) Fix Bug#59303 Correct URL in crash message
+              
+              old URL: http://dev.mysql.com/doc/refman/5.1/en/forcing-recovery.html
+              new URL: http://dev.mysql.com/doc/refman/5.1/en/forcing-innodb-recovery.html
+              
+              Notice that there is a redirect from the old URL to the new URL, so visiting
+              the old URL does not give "page not found" error.
+        ------------------------------------------------------------
+        revno: 2995.37.100 [merge]
+        committer: Jimmy Yang <jimmy.yang@oracle.com>
+        branch nick: mysql-trunk-innodb
+        timestamp: Wed 2011-01-05 05:47:15 -0800
+        message:
+          merge from mysql-5.1-innodb to mysql-5.5-innodb
+            ------------------------------------------------------------
+            revno: 2661.523.330
+            committer: Jimmy Yang <jimmy.yang@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Tue 2011-01-04 22:44:12 -0800
+            message:
+              Fix Bug #59197 double quote in field comment prevents foreign key
+              constraint creation
+              
+              rb://557 Approved by Sunny Bains
+            ------------------------------------------------------------
+            revno: 2661.523.329
+            committer: Jimmy Yang <jimmy.yang@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Tue 2011-01-04 22:31:46 -0800
+            message:
+              Fix Bug #59157 valgrind conditional jump warning from dict_load_foreign.
+              This is 5.1 built-in specific as the dict_table_t strcture is allocated
+              with mem_heap_zalloc since 5.1 plugin.
+              
+              Approved by Sunny Bains
+        ------------------------------------------------------------
+        revno: 2995.37.99 [merge]
+        committer: kevin.lewis@oracle.com
+        branch nick: mysql-5.5-innodb
+        timestamp: Tue 2011-01-04 12:42:37 -0600
+        message:
+          null merge from mysql-5.1-innodb
+            ------------------------------------------------------------
+            revno: 2661.523.328
+            committer: kevin.lewis@oracle.com
+            branch nick: mysql-5.1-innodb
+            timestamp: Tue 2011-01-04 12:34:39 -0600
+            message:
+              43818 - Patch for mysql-5.1-innodb
+              Avoid handler::info() call for three Information Schema tables;
+              TABLE_CONSTRAINTS, KEY_COLUMN_USAGE, & REFERENTIAL_CONTRAINTS
+        ------------------------------------------------------------
+        revno: 2995.37.98
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Tue 2011-01-04 11:46:20 +0200
+        message:
+          PS-instrument the array of latches (rw locks) dict_table_stats_latches[].
+          
+          This adds 64 new rows to performance_schema.rwlock_instances.
+          
+          This patch will make perfschema.binlog_mix perfschema.binlog_row tests fail,
+          but they will be fixed by http://lists.mysql.com/commits/127862
+          
+          Approved by:	Jimmy (rb://554)
+        ------------------------------------------------------------
+        revno: 2995.37.97 [merge]
+        committer: Calvin Sun <calvin.sun@oracle.com>
+        branch nick: mysql-5.5-innodb-new
+        timestamp: Mon 2010-12-27 23:03:45 -0600
+        message:
+          Merge: mysql-5.1-innodb --> mysql-5.5-innodb
+            ------------------------------------------------------------
+            revno: 2661.523.327
+            committer: Calvin Sun <calvin.sun@oracle.com>
+            branch nick: mysql-5.1-innodb-new
+            timestamp: Mon 2010-12-27 22:55:49 -0600
+            message:
+              Fix a build error on Windows, introduced by revision-id:
+              marko.makela@oracle.com-20101221112722-1yxxzzgqtem8bcm7
+              
+              The fix was suggested by Jimmy.
+        ------------------------------------------------------------
+        revno: 2995.37.96
+        committer: Calvin Sun <calvin.sun@oracle.com>
+        branch nick: mysql-5.5-innodb-new
+        timestamp: Mon 2010-12-27 23:01:39 -0600
+        message:
+          Fix a build error on Windows, introduced by revision-id:
+          marko.makela@oracle.com-20101221112722-1yxxzzgqtem8bcm7
+          
+          The fix was suggested by Jimmy.
+        ------------------------------------------------------------
+        revno: 2995.37.95 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-12-27 19:26:26 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb (empty)
+            ------------------------------------------------------------
+            revno: 2661.523.326 [merge]
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Mon 2010-12-27 19:21:21 +0200
+            message:
+              Merge mysql-5.1-bugteam -> mysql-5.1-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.94 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-12-27 19:24:05 +0200
+        message:
+          Merge mysql-5.5-bugteam -> mysql-5.5-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.93 [merge]
+        committer: Marko M?kel? <marko.makela@oracle.com>
+        branch nick: 5.5-innodb
+        timestamp: Tue 2010-12-21 14:05:10 +0200
+        message:
+          Merge mysql-5.1-innodb to mysql-5.5-innodb.
+            ------------------------------------------------------------
+            revno: 2661.523.325
+            committer: Marko M?kel? <marko.makela@oracle.com>
+            branch nick: 5.1-innodb
+            timestamp: Tue 2010-12-21 13:27:22 +0200
+            message:
+              Bug #55284 Double BLOB free due to lock wait while updating PRIMARY KEY
+              
+              This bug fix requires that Bug #58912 be fixed as well (bzr revision id
+              marko.makela@oracle.com-20101221093919-mcmmgd4zpse9567d). Otherwise,
+              another double BLOB free could occur when InnoDB would try to perform
+              an update-in-place as delete-and-insert-by-update-in-place.
+              
+              row_upd_clust_rec_by_insert(): Do not disown the externally stored
+              columns from the old record (btr_cur_mark_extern_inherited_fields())
+              until after checking the foreign key constraints and successfully
+              inserting the updated record. If a lock wait timeout occurs between
+              the delete-marking of the old record and the insertion of the updated
+              record, mark the columns inherited before retrying the insert.
+              Distinguish the state UPD_NODE_INSERT_BLOB from
+              UPD_NODE_INSERT_CLUSTERED.
+              
+              btr_cur_del_mark_set_clust_rec(): Replace the cursor with
+              block,rec,index,offsets so that the offsets need not be recalculated.
+              Assert that rec is on a clustered index leaf page.
+              
+              btr_cur_disown_inherited_fields(): Renamed from
+              btr_cur_mark_extern_inherited_fields(). Use
+              upd_get_field_by_field_no(). Assert that there are externally stored
+              columns. Assert that a mini-transaction is passed. Remove the return
+              status. (The only caller, row_upd_clust_rec_by_insert(), will have
+              determined that some fields have changed ownership.)
+              
+              btr_cur_mark_dtuple_inherited_extern(): Rename to
+              row_upd_clust_rec_by_insert_inherit_func() and declare as static. Add
+              the debug parameters rec, offsets. When rec is given, assert that the
+              off-page columns match those in the inesrt tuple and that the off-page
+              columns are owned by the record. Assert that the non-updated off-page
+              columns in the insert tuple are owned, and mark them inherited.
+              
+              row_upd_clust_rec_by_insert_inherit(): A wrapper macro for
+              row_upd_clust_rec_by_insert_inherit_func().
+              
+              row_undo_mod_upd_exist_sec(): Adjust a comment about
+              row_upd_clust_rec_by_insert().
+              
+              rb:508 approved by Jimmy Yang
+            ------------------------------------------------------------
+            revno: 2661.523.324
+            committer: Marko M?kel? <marko.makela@oracle.com>
+            branch nick: 5.1-innodb
+            timestamp: Tue 2010-12-21 11:39:19 +0200
+            message:
+              Bug#58912 InnoDB unnecessarily avoids update-in-place on column prefix indexes
+              
+              row_upd_changes_ord_field_binary(): Do not return TRUE if the update
+              vector changes a column that is covered by a prefix index, but does
+              not change the column prefix. Add the row_ext_t parameter for
+              determining whether the prefixes of externally stored columns match.
+              
+              dfield_datas_are_binary_equal(): Add the parameter len, for comparing
+              column prefixes when len > 0.
+              
+              innodb.test: Add a test case where the patch of Bug #55284 failed
+              without this fix.
+              
+              rb:537 approved by Jimmy Yang
+        ------------------------------------------------------------
+        revno: 2995.37.92
+        committer: Sunny Bains <Sunny.Bains@Oracle.Com>
+        branch nick: 5.5
+        timestamp: Fri 2010-12-17 17:27:41 +1100
+        message:
+          Bug #18274 - InnoDB auto_increment field reset on OPTIMIZE TABLE
+          With the above bug fix, the maximum autoinc value is preserved when
+          a table is optimized. Update resut file to reflect that.
+        ------------------------------------------------------------
+        revno: 2995.37.91
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Thu 2010-12-16 09:53:07 +0200
+        message:
+          Increment InnoDB version from 1.1.4 to 1.1.5 
+          InnoDB 1.1.4 was released with MySQL 5.5.8
+        ------------------------------------------------------------
+        revno: 2995.37.90 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Tue 2010-12-14 11:41:21 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb
+            ------------------------------------------------------------
+            revno: 2661.523.323
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Tue 2010-12-14 11:38:19 +0200
+            message:
+              Speed up innodb_bug57255.test
+              
+              Submitted by:	Stewart Smith (via internals@lists.mysql.com)
+        ------------------------------------------------------------
+        revno: 2995.37.89 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Sun 2010-12-12 11:25:03 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb (empty)
+            ------------------------------------------------------------
+            revno: 2661.523.322 [merge]
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Sun 2010-12-12 11:21:17 +0200
+            message:
+              Merge mysql-5.1-bugteam -> mysql-5.1-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.88 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Sun 2010-12-12 11:23:51 +0200
+        message:
+          Merge mysql-5.5-bugteam -> mysql-5.5-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.87
+        committer: kevin.lewis@oracle.com
+        branch nick: mysql-5.5-innodb
+        timestamp: Thu 2010-12-09 10:42:35 -0600
+        message:
+          55222 - Previous patch had a bug in unused code which was reactivated in
+          mysql-trunk-innodb in rev revno: 3367  Tue 2010-12-07 02:25:25-0800.
+          The crash happens only when lower_case_table_names=2, such as on MacOS,
+          when running the new testcase innodb-system-table-view.  Specifically,
+          it crashes when any query is made against the INFORMATION_SCHEMA.
+          INNODB_SYS_FOREIGN table.  The function dict_process_sys_foreign_rec()
+          is only used for displaying SYS_FOREIGN records so it does not need a
+          lookup version of those names to be allocated. In this patch, those new
+          function calls are deleted.
+        ------------------------------------------------------------
+        revno: 2995.37.86 [merge]
+        committer: Jimmy Yang <jimmy.yang@oracle.com>
+        branch nick: mysql-trunk-innodb
+        timestamp: Thu 2010-12-09 01:32:53 -0800
+        message:
+          Merge from mysql-5.1-innodb to mysql-5.5-innodb.
+            ------------------------------------------------------------
+            revno: 2661.523.321
+            committer: Jimmy Yang <jimmy.yang@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Thu 2010-12-09 01:19:46 -0800
+            message:
+              Fix Bug #57600 output of I/O sum[%lu] can go negative
+              
+              rb://532 approved by Sunny Bains
+        ------------------------------------------------------------
+        revno: 2995.37.85 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Sun 2010-12-05 21:17:51 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb (empty)
+            ------------------------------------------------------------
+            revno: 2661.523.320 [merge]
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Sun 2010-12-05 21:16:13 +0200
+            message:
+              Merge mysql-5.1-bugteam -> mysql-5.1-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.84 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Sun 2010-12-05 21:17:01 +0200
+        message:
+          Merge mysql-5.5-bugteam -> mysql-5.5-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.83
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2010-12-03 09:35:53 +0200
+        message:
+          Cherry pick vasil.dimov@oracle.com-20101201140708-fsc5xlu9bkpov6pv
+          from mysql-trunk-innodb. The same problem also exists in 5.5.
+          
+            X revision-id: vasil.dimov@oracle.com-20101201140708-fsc5xlu9bkpov6pv
+            X committer: Vasil Dimov <vasil.dimov@oracle.com>
+            X branch nick: mysql-trunk-innodb
+            X timestamp: Wed 2010-12-01 16:07:08 +0200
+            X message:
+            X   Fix Bug#58432 innodb.innodb_bug56143 fails under valgrind
+            X   
+            X   Use a longer timeout for semaphore waits if (possibly) running under
+            X   Valgrind.
+            X   
+            X   Approved by:	Marko (via IRC)
+        ------------------------------------------------------------
+        revno: 2995.37.82
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Thu 2010-12-02 12:04:10 +0200
+        message:
+          Define MYSQL_(MAJOR|MINOR)_VERSION the way things are defined in CMake
+          instead of hacking a custom ADD_DEFINITIONS().
+          
+          Approved by:	Kent Boortz (via IRC)
+        ------------------------------------------------------------
+        revno: 2995.37.81 [merge]
+        committer: Marko M?kel? <marko.makela@oracle.com>
+        branch nick: 5.5-innodb
+        timestamp: Thu 2010-12-02 10:55:27 +0200
+        message:
+          Merge from mysql-5.5-innodb to local.
+            ------------------------------------------------------------
+            revno: 2995.40.1
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.5-innodb
+            timestamp: Thu 2010-12-02 10:36:45 +0200
+            message:
+              Use "rep; nop" in InnoDB if it is available and "pause" is not
+        ------------------------------------------------------------
+        revno: 2995.37.80
+        committer: Marko M?kel? <marko.makela@oracle.com>
+        branch nick: 5.5-innodb
+        timestamp: Thu 2010-12-02 10:32:27 +0200
+        message:
+          Fix UNIV_MEM_DEBUG compilation failure caused by Bug#58226 fix.
+          
+          To fix Bug#58226 (speed up UNIV_DEBUG), among other things we no longer
+          disable the inlining of the functions that are defined in InnoDB .ic files.
+          Inside UNIV_MEM_DEBUG, there was an implicit type conversion from void*
+          that is all right in C, but not in C++. Now that inlining was enabled,
+          the C++ compiler would see the code and complain.
+          
+          Approved by Jimmy Yang on IRC.
+        ------------------------------------------------------------
+        revno: 2995.37.79
+        committer: Marko M?kel? <marko.makela@oracle.com>
+        branch nick: 5.5-innodb
+        timestamp: Wed 2010-12-01 15:09:02 +0200
+        message:
+          Bug#58212 Possible deadlock in change buffer in debug builds
+          
+          ibuf_page(): Renamed to ibuf_page_low(). Add the parameters file, line
+          so that the latch diagnostics will be more meaningful.
+          In debug builds, add the parameter ibool x_latch. When x_latch=FALSE,
+          do not x-latch the page, but only buffer-fix it for reading the bit.
+          In UNIV_SYNC_DEBUG, display a message if an insert buffer bitmap page
+          was already latched. (The message should be displayed in those cases
+          where the code would have previously failed.)
+          
+          ibuf_page(): A wrapper macro for ibuf_page_low(). Pass x_latch=TRUE.
+          
+          ibuf_bitmap_page_get_bits(): Renamed to ibuf_bitmap_page_get_bits_low().
+          In UNIV_DEBUG, add the parameter latch_mode.
+          Remove the parameter mtr unless UNIV_DEBUG is defined.
+          
+          ibuf_bitmap_page_get_bits(): A wrapper macro for
+          ibuf_bitmap_page_get_bits_low(). Pass latch_type=MTR_MEMO_PAGE_X_FIX.
+          
+          buf_page_get_gen(): Use ibuf_page_low(x_latch=FALSE) in the debug assertion.
+          This avoids the possible deadlock.
+        ------------------------------------------------------------
+        revno: 2995.37.78
+        committer: Marko M?kel? <marko.makela@oracle.com>
+        branch nick: 5.5-innodb
+        timestamp: Wed 2010-12-01 10:43:33 +0200
+        message:
+          Bug#58226 Some InnoDB debug checks consume too much CPU time
+          
+          Do not disable InnoDB inlining when UNIV_DEBUG is defined. The
+          inlining is now solely controlled by the preprocessor symbol
+          UNIV_MUST_NOT_INLINE and by any compiler options.
+          
+          mtr_memo_contains(): Add an explicit type conversion from void*, so
+          that the function can be compiled by a C++ compiler. Previously, this
+          function was never seen by the C++ compiler, because it is only
+          present in UNIV_DEBUG builds and InnoDB inlining used to be disabled.
+          
+          buf_flush_validate_skip(): A wrapper that skips most calls of
+          buf_flush_validate_low(). Invoked by debug assertions in
+          buf_flush_insert_into_flush_list() and buf_flush_remove().
+          
+          fil_validate_skip(): A wrapper that skips most calls of
+          fil_validate(). Invoked by debug assertions in fil_io() and fil_io_wait().
+          
+          os_aio_validate_skip(): A wrapper that skips most calls of
+          os_aio_validate(). Invoked by debug assertions in
+          os_aio_func(), os_aio_windows_handle() and os_aio_simulated_handle.
+          
+          os_get_os_version(): Only include this function if __WIN__ is defined.
+          
+          sync_array_deadlock_step(): Slight optimizations. This function is a
+          major CPU consumer in UNIV_SYNC_DEBUG builds.
+        ------------------------------------------------------------
+        revno: 2995.37.77
+        committer: Marko M?kel? <marko.makela@oracle.com>
+        branch nick: 5.5-innodb
+        timestamp: Wed 2010-12-01 10:36:54 +0200
+        message:
+          Fix a compilation error that was introduced in the Bug #55222 fix
+          (bzr revision id kevin.lewis@oracle.com-20101130182552-hfydggaeeys3tjqx).
+        ------------------------------------------------------------
+        revno: 2995.37.76 [merge]
+        committer: Marko M?kel? <marko.makela@oracle.com>
+        branch nick: 5.5-innodb
+        timestamp: Wed 2010-12-01 10:09:32 +0200
+        message:
+          Merge mysql-5.1-innodb to mysql-5.5-innodb.
+            ------------------------------------------------------------
+            revno: 2661.523.319
+            committer: Marko M?kel? <marko.makela@oracle.com>
+            branch nick: 5.1-innodb
+            timestamp: Wed 2010-12-01 10:03:53 +0200
+            message:
+              Bug#58623: Bogus debug assertion failure in i_s_locks_row_validate()
+              
+              This bogus assertion was introduced in the fix of Bug #57802:
+              Empty ASSERTION parameter passed to the HASH_SEARCH macro.
+        ------------------------------------------------------------
+        revno: 2995.37.75
+        committer: kevin.lewis@oracle.com
+        branch nick: mysql-5.5-innodb
+        timestamp: Tue 2010-11-30 20:13:02 -0600
+        message:
+          Fix compiler warning for Bug#55222 patch.
+        ------------------------------------------------------------
+        revno: 2995.37.74
+        committer: kevin.lewis@oracle.com
+        branch nick: mysql-5.5-innodb
+        timestamp: Tue 2010-11-30 12:25:52 -0600
+        message:
+          Bug#55222 - RB://517 - Approved by Sunny
+          
+          InnoDB does not attempt to handle lower_case_table_names == 2 when looking
+          up foreign table names and referenced table name.  It turned that server
+          variable into a boolean and ignored the possibility of it being '2'.  
+          
+          The setting lower_case_table_names == 2 means that it should be stored and
+          displayed in mixed case as given, but compared internally in lower case.
+          Normally the server deals with this since it stores table names.  But
+          InnoDB stores referential constraints for the server, so it needs to keep
+          track of both lower case and given names.
+          
+          This solution creates two table name pointers for each foreign and referenced
+          table name.  One to display the name, and one to look it up.  Both pointers
+          point to the same allocated string unless this setting is 2.  So the overhead
+          added is not too much.
+          
+          Two functions are created in dict0mem.c to populate the ..._lookup versions
+          of these pointers.  Both dict_mem_foreign_table_name_lookup_set() and
+          dict_mem_referenced_table_name_lookup_set() are called 5 times each.
+        ------------------------------------------------------------
+        revno: 2995.37.73 [merge]
+        committer: kevin.lewis@oracle.com
+        branch nick: mysql-5.5-innodb
+        timestamp: Tue 2010-11-30 10:10:27 -0600
+        message:
+          Null Merge from mysql-5.1-innodb
+            ------------------------------------------------------------
+            revno: 2661.523.318
+            committer: kevin.lewis@oracle.com
+            branch nick: mysql-5.1-innodb
+            timestamp: Tue 2010-11-30 10:03:55 -0600
+            message:
+              RB://518 approved by Jimmy Yang and Sunny bains
+                  
+              Code cleanup after changes for Bug 56628.  The general approach for 
+              InnoDB is to make a reference to each enum value whenever it is used in a
+              switch statement.  In addition, no default case should be used for switch 
+              statements on enum types.  This assures that if there is ever any change 
+              in the enum values, the switch will need to change to reflect it since a 
+              compiler warning will occur.  In this case, the enum row_type is declared 
+              in handler.h and could be changed for another storage engine.  If so, a 
+              warning will occur in the InnoDB build.  
+              
+              Other changes;
+              * This patch uses 2 macros to help consolidate warning messages that
+                 need to occur twice in the single switch for row_format.
+              * Using row_format as the variable name to distinguish it from the enum
+                type.
+              * Function declaration format correction.
+        ------------------------------------------------------------
+        revno: 2995.37.72
+        committer: kevin.lewis@oracle.com
+        branch nick: mysql-5.5-innodb
+        timestamp: Tue 2010-11-30 10:06:11 -0600
+        message:
+          RB://518 approved by Jimmy Yang and Sunny bains
+              
+          Code cleanup after changes for Bug 56628.  The general approach for 
+          InnoDB is to make a reference to each enum value whenever it is used in a
+          switch statement.  In addition, no default case should be used for switch 
+          statements on enum types.  This assures that if there is ever any change 
+          in the enum values, the switch will need to change to reflect it since a 
+          compiler warning will occur.  In this case, the enum row_type is declared 
+          in handler.h and could be changed for another storage engine.  If so, a 
+          warning will occur in the InnoDB build.  
+          
+          Other changes;
+          * This patch uses 2 macros to help consolidate warning messages that
+             need to occur twice in the single switch for row_format.
+          * Using row_format as the variable name to distinguish it from the enum
+            type.
+          * Function declaration format correction.
+        ------------------------------------------------------------
+        revno: 2995.37.71
+        committer: Sunny Bains <Sunny.Bains@Oracle.Com>
+        branch nick: 5.5
+        timestamp: Tue 2010-11-30 16:51:40 +1100
+        message:
+          Fix Bug# 58459 - assert slot->in_use == FALSE while starting purge thread.
+          
+          Fix a race condition in srv_master_thread(). We need to acquire the kernel
+          mutex before calling srv_table_reserve_slot(). Add a mutex_own() assertion
+          in srv_table_reserve_slot().
+        ------------------------------------------------------------
+        revno: 2995.37.70
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-11-29 14:53:09 +0200
+        message:
+          Make output from innobase_start_or_create_for_mysql() consistent
+          
+          Prefix all printed lines with a timestamp and write one space between
+          the timestamp and "InnoDB:".
+        ------------------------------------------------------------
+        revno: 2995.37.69
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-11-29 14:50:26 +0200
+        message:
+          Fix pointers to documentation
+          
+          Do not print pointer to the 5.1 documentation from within MySQL 5.5.
+          
+          Instead of hardcoding the MySQL version, use the MAJOR_VERSION and
+          MINOR_VERSION CMake variables defined at top-level.
+        ------------------------------------------------------------
+        revno: 2995.37.68 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-11-29 09:09:47 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb (empty)
+            ------------------------------------------------------------
+            revno: 2661.523.317 [merge]
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Mon 2010-11-29 09:07:11 +0200
+            message:
+              Merge mysql-5.1-bugteam -> mysql-5.1-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.67 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-11-29 09:08:23 +0200
+        message:
+          Merge mysql-5.5-bugteam -> mysql-5.5-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.66
+        committer: Jimmy Yang <jimmy.yang@oracle.com>
+        branch nick: mysql-trunk-innodb
+        timestamp: Sun 2010-11-28 17:43:55 -0800
+        message:
+          Fix Bug #58461 InnoDB should show aggregated result for multiple
+          buffer pool instance.
+          
+          rb://526 approved by Sunny Bains
+        ------------------------------------------------------------
+        revno: 2995.37.65
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2010-11-26 10:54:12 +0200
+        message:
+          Fix the PAUSE instruction handling in InnoDB
+          
+          Previously HAVE_IB_PAUSE_INSTRUCTION was never defined and thus InnoDB
+          never used the PAUSE instruction on non-windows even if it was available.
+          Probably the check was never migrated from autotools'
+          storage/innobase/plug.in to storage/innobase/CMakeLists.txt.
+          
+          Since the check for PAUSE is done at top-level configure.cmake we can
+          use the result from there (HAVE_PAUSE_INSTRUCTION) instead of rolling
+          InnoDB's own HAVE_IB_PAUSE_INSTRUCTION (the check is identical anyway).
+        ------------------------------------------------------------
+        revno: 2995.37.64 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Thu 2010-11-25 09:11:25 +0200
+        message:
+          Null merge mysql-5.1-innodb -> mysql-5.5-innodb
+          
+          The merged changeset is not relevant for 5.5 and above.
+            ------------------------------------------------------------
+            revno: 2661.523.316
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Thu 2010-11-25 08:55:47 +0200
+            message:
+              Bug#47350 Support innodb plugin without separate shared object
+              
+              Add a _commented_ workaround for Bug#47350. The full solution is tricky
+              to get right as explained in the bug report. It is not worth the effort
+              to extend the deprecated autotools framework to support conflicting
+              plugins and would be too risky for MySQL 5.1 (GA).
+        ------------------------------------------------------------
+        revno: 2995.37.63 [merge]
+        committer: Sunny Bains <Sunny.Bains@Oracle.Com>
+        branch nick: 5.5
+        timestamp: Wed 2010-11-24 14:36:00 +1100
+        message:
+          Merge from mysql-5.1-innodb to mysql-5.5-innodb. Test was adjusted.
+            ------------------------------------------------------------
+            revno: 2661.523.315
+            committer: Sunny Bains <Sunny.Bains@Oracle.Com>
+            branch nick: 5.1
+            timestamp: Wed 2010-11-24 14:07:43 +1100
+            message:
+              Fix bug# 18274 InnoDB auto_increment field reset on OPTIMIZE TABLE
+              
+              OPTIMIZE TABLE recreates the whole table. That is why the counter gets reset.
+              Making the next autoinc column persistent is a separate issue from resetting
+              the value after an OPTIMIZE TABLE. We already have a check for ALTER TABLE
+              and CREATE INDEX to preserve the value on table recreate. We should be able to
+              add an additional check for OPTIMIZE TABLE to preserve the next value.
+              
+              rb://519 Approved by Jimmy Yang.
+        ------------------------------------------------------------
+        revno: 2995.37.62
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-11-22 16:08:51 +0200
+        message:
+          Fix Bug#57739 Scary messages in error log
+          
+          Silence a warning about old table name when InnoDB tests whether the
+          format has changed using a nonexistent table name.
+          
+          Reviewed by:	bar@mysql.com, marko.makela@oracle.com
+        ------------------------------------------------------------
+        revno: 2995.37.61
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-11-22 12:29:44 +0200
+        message:
+          Do not run federated tests for mysql-trunk-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.60
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Mon 2010-11-22 12:27:04 +0200
+        message:
+          Add -innodb specific files for PB2 tests
+          
+          mysql-5.1-innodb.push and mysql-5.5-innodb.push are forked from
+          default.push and mysql-trunk-innodb.push from mysql-trunk.push
+        ------------------------------------------------------------
+        revno: 2995.37.59
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2010-11-19 15:45:18 +0200
+        message:
+          Fix Bug#58279 Incorrect enabling of UNIV_DEBUG in debug builds
+          
+          Checking "IF(WITH_DEBUG)" does not work for multi-configuration CMake
+          generators like VS or XCode. See
+          http://forge.mysql.com/wiki/CMake#Debug-only_options
+        ------------------------------------------------------------
+        revno: 2995.37.58 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2010-11-19 11:26:52 +0200
+        message:
+          Merge mysql-5.1-innodb -> mysql-5.5-innodb (empty)
+            ------------------------------------------------------------
+            revno: 2661.523.314 [merge]
+            committer: Vasil Dimov <vasil.dimov@oracle.com>
+            branch nick: mysql-5.1-innodb
+            timestamp: Fri 2010-11-19 11:21:35 +0200
+            message:
+              Merge mysql-5.1-bugteam -> mysql-5.1-innodb
+        ------------------------------------------------------------
+        revno: 2995.37.57 [merge]
+        committer: Vasil Dimov <vasil.dimov@oracle.com>
+        branch nick: mysql-5.5-innodb
+        timestamp: Fri 2010-11-19 11:23:52 +0200
+        message:
+          Merge mysql-5.5-bugteam -> mysql-5.5-innodb
+    ------------------------------------------------------------
+    revno: 3097.18.88
+    committer: Davi Arnaut <davi.arnaut@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Fri 2011-01-07 17:32:41 -0200
+    message:
+      Bug#58765: Warning in item.h on Windows
+      
+      Truncate the maximum result length (64-bit wide type) to fit into
+      the item maximum length (32-bit wide type). This is possible as
+      this specific branch is only used if the maximum result length
+      is less than 0x1000000 (MAX_BLOB_WIDTH), which fits comfortably
+      in a 32-bit wide type.
+    ------------------------------------------------------------
+    revno: 3097.18.87 [merge]
+    committer: Davi Arnaut <davi.arnaut@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Fri 2011-01-07 17:30:52 -0200
+    message:
+      Merge of mysql-5.1 into mysql-5.5.
+        ------------------------------------------------------------
+        revno: 2661.720.28
+        committer: Davi Arnaut <davi.arnaut@oracle.com>
+        branch nick: mysql-5.1
+        timestamp: Fri 2011-01-07 17:28:06 -0200
+        message:
+          Bug#51023: Mysql server crashes on SIGHUP and destroys InnoDB files
+          
+          WIN32 compilation fixes: define ETIMEDOUT only if not available and
+          fix typos and add a missing parameter.
+        ------------------------------------------------------------
+        revno: 2661.720.27
+        committer: Davi Arnaut <davi.arnaut@oracle.com>
+        branch nick: 51023-5.1
+        timestamp: Fri 2011-01-07 16:33:36 -0200
+        message:
+          Bug#51023: Mysql server crashes on SIGHUP and destroys InnoDB files
+          
+          From a user perspective, the problem is that a FLUSH LOGS or SIGHUP
+          signal could end up associating the stdout and stderr to random
+          files. In the case of this bug report, the streams would end up
+          associated to InnoDB ibd files.
+          
+          The freopen(3) function is not thread-safe on FreeBSD. What this
+          means is that if another thread calls open(2) during freopen()
+          is executing that another thread's fd returned by open(2) may get
+          re-associated with the file being passed to freopen(3). See FreeBSD
+          PR number 79887 for reference:
+          
+            http://www.freebsd.org/cgi/query-pr.cgi?pr=79887
+          
+          This problem is worked around by substituting a internal hook within
+          the FILE structure. This avoids the loss of atomicity by not having
+          the original fd closed before its duplicated.
+          
+          Patch based on the original work by Vasil Dimov.
+    ------------------------------------------------------------
+    revno: 3097.18.86
+    committer: Matthias Leich <matthias.leich@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Fri 2011-01-07 14:37:46 +0100
+    message:
+      Fix for Bug#58414 Race condition in show_check.test
+         Basically take care that disconnects are finished.
+    ------------------------------------------------------------
+    revno: 3097.18.85
+    committer: Matthias Leich <matthias.leich@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Fri 2011-01-07 14:16:28 +0100
+    message:
+      Fix for Bug#47745 innodb.innodb-timeout fails sporadically
+      - Second scenario checked:
+        Ensure via wait routines that the commit comes after the
+        processing of the statement which should get finally
+        the ER_LOCK_WAIT_TIMEOUT
+        --> This should prevent the current bug.
+      - First scenario checked:
+        Ensure via wait routines that the statement is already waiting
+        for getting the lock before the commit is given.
+        --> No effect on the current bug, but ensure that the right
+            scenario is reached.
+      - Take care that disconnects are finished before the test ends.
+        --> Reduce the potential to harm succeeding tests.
+      - "Mangle" the printout of the current default innodb_lock_wait_timeout value
+        --> No need to adjust the test in case the default gets changed in future.
+    ------------------------------------------------------------
+    revno: 3097.18.84
+    committer: Matthias Leich <matthias.leich@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Fri 2011-01-07 13:08:05 +0100
+    message:
+      1. Fix for Bug#58600 main.not_embedded_server test does not cleanup properly
+         - remove the superfluous file
+         - add an preemptive removal of the outfile before the
+           SELECT ... INTO OUTFILE ...
+      2. Remove an already disabled subtest
+         It's functionality is covered by tests in the suite funcs_1.
+      3. Adjust the formatting within some sub testcase to the formatting used
+         in all other sub testcases
+------------------------------------------------------------
+revno: 3140
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: mysql-5.5-security
+timestamp: Mon 2011-01-10 11:54:05 +0200
+message:
+  Bug #59148 - made tests experimental
+------------------------------------------------------------
+revno: 3139 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Fri 2011-01-07 16:29:17 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 2661.712.9 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.1-security
+    timestamp: Fri 2011-01-07 16:06:24 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 1810.4000.4 [merge]
+        committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+        branch nick: merge-5.0-security
+        timestamp: Fri 2011-01-07 15:28:36 +0200
+        message:
+          automerge
+    ------------------------------------------------------------
+    revno: 2661.712.8 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.1-security
+    timestamp: Fri 2011-01-07 15:30:42 +0200
+    message:
+      automerge
+------------------------------------------------------------
+revno: 3138 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Fri 2011-01-07 15:30:54 +0200
+message:
+  automerge
+    ------------------------------------------------------------
+    revno: 3097.18.83 [merge]
+    committer: Saikumar V <saikumar.v@sun.com>
+    branch nick: mysql-5.5
+    timestamp: Thu 2011-01-06 16:47:22 +0530
+    message:
+      Adding more mtr commands to runs engine suites.
+        ------------------------------------------------------------
+        revno: 2661.720.26
+        committer: Saikumar V <saikumar.v@sun.com>
+        branch nick: mysql-5.1
+        timestamp: Thu 2011-01-06 16:09:45 +0530
+        message:
+          Adding more mtr commands to runs engine suites.
+    ------------------------------------------------------------
+    revno: 3097.18.82 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Wed 2011-01-05 15:02:48 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 2661.720.25
+        committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+        branch nick: mysql-5.1
+        timestamp: Wed 2011-01-05 14:58:05 +0200
+        message:
+          Bug #59178: disable the test case
+    ------------------------------------------------------------
+    revno: 3097.18.81 [merge]
+    committer: Nirbhay Choubey <nirbhay.choubey@sun.com>
+    branch nick: mysql-5.5
+    timestamp: Wed 2011-01-05 12:43:30 +0530
+    message:
+      
+      Updating the local repository.
+        ------------------------------------------------------------
+        revno: 3097.40.2 [merge]
+        committer: Marc Alff <marc.alff@oracle.com>
+        branch nick: mysql-5.5-bug59091
+        timestamp: Wed 2011-01-05 08:02:14 +0100
+        message:
+          Local merge
+        ------------------------------------------------------------
+        revno: 3097.40.1
+        committer: Marc Alff <marc.alff@oracle.com>
+        branch nick: mysql-5.5-bug59091
+        timestamp: Tue 2011-01-04 10:04:02 +0100
+        message:
+          Bug#59091 perfschema.binlog_mix and perfschema.binlog_row tests fail with openssl
+          
+          Fixed the test case to be independent of build options used.
+          Removed the lowercase-table-names constraint, since performance schema tables are now in lowercase.
+    ------------------------------------------------------------
+    revno: 3097.18.80
+    committer: Nirbhay Choubey <nirbhay.choubey@sun.com>
+    branch nick: mysql-5.5
+    timestamp: Wed 2011-01-05 12:23:05 +0530
+    message:
+      
+      Modifications in mysql-5.5 engines test suite.
+    ------------------------------------------------------------
+    revno: 3097.18.79 [merge]
+    committer: Nirbhay Choubey <nirbhay.choubey@sun.com>
+    branch nick: mysql-5.5
+    timestamp: Wed 2011-01-05 12:20:55 +0530
+    message:
+      Null-merge from mysql-5.1.
+        ------------------------------------------------------------
+        revno: 2661.720.24
+        committer: Nirbhay Choubey <nirbhay.choubey@sun.com>
+        branch nick: mysql-5.1
+        timestamp: Wed 2011-01-05 12:16:07 +0530
+        message:
+          
+          Modifications in mysql-5.1 engines test suite.
+    ------------------------------------------------------------
+    revno: 3097.18.78 [merge]
+    committer: Jon Olav Hauglid <jon.hauglid@oracle.com>
+    branch nick: mysql-5.5-test
+    timestamp: Tue 2011-01-04 15:28:03 +0100
+    message:
+      Merge from mysql-5.1 to mysql-5.5.
+      No conflicts.
+        ------------------------------------------------------------
+        revno: 2661.720.23
+        committer: Jon Olav Hauglid <jon.hauglid@oracle.com>
+        branch nick: mysql-5.1-bug50619
+        timestamp: Tue 2011-01-04 14:36:37 +0100
+        message:
+          Bug #50619 assert in handler::update_auto_increment
+          
+          This assert could be triggered if -1 was inserted into
+          an auto increment column by a statement writing more than
+          one row.
+          
+          Unless explicitly given, an interval of auto increment values
+          is generated when a statement first needs an auto increment
+          value. The triggered assert checks that the auto increment
+          counter is equal to or higher than the lower bound of this
+          interval.
+          
+          Generally, the auto increment counter starts at 1 and is
+          incremented by 1 each time it is used. However, inserting an
+          explicit value into the auto increment column, sets the auto
+          increment counter to this value + 1 if this value is higher
+          than the current value of the auto increment counter.
+          
+          This bug was triggered if the explicit value was -1. Since the
+          value was converted to unsigned before any comparisons were made,
+          it was found to be higher than the current vale of the auto
+          increment counter and the counter was set to -1 + 1. This value
+          was below the reserved interval and caused the assert to be
+          triggered the next time the statement tried to write a row.
+          
+          With the patch for Bug#39828, this bug is no longer repeatable.
+          Now, -1 + 1 is detected as an "overflow" which causes the auto
+          increment counter to be set to ULONGLONG_MAX. This avoids hitting
+          the assert for the next insert and causes a new interval of
+          auto increment values to be generated. This resolves the issue.
+          
+          This patch therefore only contains a regression test and no code
+          changes. Test case added to auto_increment.test.
+    ------------------------------------------------------------
+    revno: 3097.18.77 [merge]
+    committer: Mikael Ronstrom <mikael@dator8>
+    branch nick: mysql-5.5-bug59013
+    timestamp: Mon 2011-01-03 15:59:04 +0100
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 3097.39.5
+        committer: Tor Didriksen <tor.didriksen@oracle.com>
+        branch nick: 5.5
+        timestamp: Mon 2011-01-03 14:08:48 +0100
+        message:
+          Add mysys to mysqld dependencies, trying to un-break the build on debian
+        ------------------------------------------------------------
+        revno: 3097.39.4 [merge]
+        committer: Guilhem Bichot <guilhem.bichot@oracle.com>
+        branch nick: mysql-5.5
+        timestamp: Fri 2010-12-31 12:14:48 +0100
+        message:
+          merge from 5.1; now this test is not experimental anymore
+            ------------------------------------------------------------
+            revno: 2661.720.22
+            committer: Guilhem Bichot <guilhem.bichot@oracle.com>
+            branch nick: mysql-5.1
+            timestamp: Fri 2010-12-31 12:07:34 +0100
+            message:
+              Test which runs slowly on some machines, is marked as big
+              so will be run only weekly; this closes BUG#50595.
+        ------------------------------------------------------------
+        revno: 3097.39.3
+        committer: Dmitry Shulga <Dmitry.Shulga@oracle.com>
+        branch nick: mysql-5.5
+        timestamp: Thu 2010-12-30 14:17:16 +0600
+        message:
+          Test main.log_tables was unmarked as experimental.
+        ------------------------------------------------------------
+        revno: 3097.39.2 [merge]
+        committer: Alexander Nozdrin <alexander.nozdrin@oracle.com>
+        branch nick: mysql-5.5
+        timestamp: Wed 2010-12-29 14:36:52 +0300
+        message:
+          Auto-merge from mysql-5.1.
+            ------------------------------------------------------------
+            revno: 2661.720.21 [merge]
+            committer: Alexander Nozdrin <alexander.nozdrin@oracle.com>
+            branch nick: mysql-5.1
+            timestamp: Wed 2010-12-29 14:34:32 +0300
+            message:
+              Empty merge from mysql-5.0.
+                ------------------------------------------------------------
+                revno: 1810.4001.5 [merge]
+                committer: Alexander Nozdrin <alexander.nozdrin@oracle.com>
+                branch nick: mysql-5.0
+                timestamp: Wed 2010-12-29 14:30:37 +0300
+                message:
+                  Auto-merge from mysql-5.0-bugteam.
+            ------------------------------------------------------------
+            revno: 2661.720.20 [merge]
+            committer: Alexander Nozdrin <alexander.nozdrin@oracle.com>
+            branch nick: mysql-5.1
+            timestamp: Wed 2010-12-29 14:31:09 +0300
+            message:
+              Auto-merge from mysql-5.1-bugteam.
+        ------------------------------------------------------------
+        revno: 3097.39.1 [merge]
+        committer: Alexander Nozdrin <alexander.nozdrin@oracle.com>
+        branch nick: mysql-5.5
+        timestamp: Wed 2010-12-29 14:31:32 +0300
+        message:
+          Auto-merge from mysql-5.5-bugteam.
+            ------------------------------------------------------------
+            revno: 3097.34.19 [merge]
+            committer: <Dao-Gang.Qu@sun.com>
+            branch nick: mysql-5.5-bugteam
+            timestamp: Wed 2010-12-29 13:22:52 +0800
+            message:
+              Bug #50914    mysqlbinlog not handling drop of current default database
+                    
+              mysqlbinlog only prints "use $database" statements to its output stream
+              when the active default database changes between events. This will cause
+              "No Database Selected" error when dropping and recreating that database.
+                    
+              To fix the problem, we clear print_event_info->db when printing an event
+              of CREATE/DROP/ALTER database statements, so that the Query_log_event
+              after such statements will be printed with the use 'db' anyway except
+              transaction keywords.
+                ------------------------------------------------------------
+                revno: 2661.730.9
+                committer: <Dao-Gang.Qu@sun.com>
+                branch nick: mysql-5.1-bugteam
+                timestamp: Wed 2010-12-29 11:52:57 +0800
+                message:
+                  Bug #50914  	mysqlbinlog not handling drop of current default database
+                  
+                  mysqlbinlog only prints "use $database" statements to its output stream
+                  when the active default database changes between events. This will cause
+                  "No Database Selected" error when dropping and recreating that database.
+                  
+                  To fix the problem, we clear print_event_info->db when printing an event
+                  of CREATE/DROP/ALTER database statements, so that the Query_log_event
+                  after such statements will be printed with the use 'db' anyway except
+                  transaction keywords.
+            ------------------------------------------------------------
+            revno: 3097.34.18 [merge]
+            committer: Kent Boortz <kent.boortz@sun.com>
+            branch nick: mysql-5.5-bugteam
+            timestamp: Wed 2010-12-29 01:26:31 +0100
+            message:
+              Merge
+                ------------------------------------------------------------
+                revno: 2661.730.8 [merge]
+                committer: Kent Boortz <kent.boortz@sun.com>
+                branch nick: mysql-5.1-bugteam
+                timestamp: Wed 2010-12-29 00:47:05 +0100
+                message:
+                  Merge
+                    ------------------------------------------------------------
+                    revno: 1810.4002.1
+                    committer: Kent Boortz <kent.boortz@sun.com>
+                    branch nick: mysql-5.0-bugteam
+                    timestamp: Tue 2010-12-28 19:57:23 +0100
+                    message:
+                      - Added/updated copyright headers
+                      - Removed files specific to compiling on OS/2
+                      - Removed files specific to SCO Unix packaging
+                      - Removed "libmysqld/copyright", text is included in documentation
+                      - Removed LaTeX headers for NDB Doxygen documentation
+                      - Removed obsolete NDB files
+                      - Removed "mkisofs" binaries
+                      - Removed the "cvs2cl.pl" script
+                      - Changed a few GPL texts to use "program" instead of "library"
+            ------------------------------------------------------------
+            revno: 3097.34.17 [merge]
+            committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+            branch nick: mysql-5.5-bugteam
+            timestamp: Fri 2010-12-24 14:21:44 +0300
+            message:
+              5.1-bugteam->5.5-bugteam merge
+                ------------------------------------------------------------
+                revno: 2661.730.7
+                committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+                branch nick: mysql-5.1-bugteam
+                timestamp: Fri 2010-12-24 14:05:04 +0300
+                message:
+                  Bug#57810 case/when/then : Assertion failed: length || !scale
+                  ASSERT happens due to improper calculation of the max_length
+                  in Item_func_div object, if dividend has max_length == 0 then
+                  Item_func_div::max_length is set to 0 under some circumstances.
+                  The fix:
+                  If decimals == NOT_FIXED_DEC then set
+                  Item_func_div::max_length to max possible
+                  DOUBLE length value.
+    ------------------------------------------------------------
+    revno: 3097.18.76
+    committer: Mikael Ronstrom <mikael@dator8>
+    branch nick: bug59013
+    timestamp: Fri 2010-12-17 21:58:40 +0100
+    message:
+      BUG#59013, make partition handler not miss HA_STATUS_NO_LOCK, add HA_STATUS_VARIABLE_EXTRA to remove InnoDB bottleneck
+------------------------------------------------------------
+revno: 3137 [merge]
+committer: Jimmy Yang <jimmy.yang@oracle.com>
+branch nick: mysql-5.5-security
+timestamp: Fri 2011-01-07 00:00:36 -0800
+message:
+  Merge from mysql-5.1-security to mysql-5.5-security
+    ------------------------------------------------------------
+    revno: 2661.712.7
+    committer: Jimmy Yang <jimmy.yang@oracle.com>
+    branch nick: mysql-5.1-security
+    timestamp: Thu 2011-01-06 23:45:59 -0800
+    message:
+      Backport Bug #58643 InnoDB: too long table name. Also fix Bug #59312 examine
+      MAX_FULL_NAME_LEN in InnoDB to address possible insufficient name buffer
+      
+      Bug #59312 Approved by Sunny Bains
+------------------------------------------------------------
+revno: 3136 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Thu 2010-12-23 13:39:58 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 2661.712.6
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.1-security
+    timestamp: Thu 2010-12-23 13:35:42 +0200
+    message:
+      fixed the binlog problem
+------------------------------------------------------------
+revno: 3135 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Thu 2010-12-23 13:36:27 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 2661.712.5 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.1-security
+    timestamp: Thu 2010-12-23 12:49:08 +0200
+    message:
+      merge
+------------------------------------------------------------
+revno: 3134 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Thu 2010-12-23 12:40:40 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 3097.34.16
+    committer: Anitha Gopi <anitha.gopi@sun.com>
+    branch nick: mysql-5.5-bugteam
+    timestamp: Tue 2010-12-21 23:14:48 +0530
+    message:
+      BUG #59055: RQG was broken after the checkin that removed rpl and rpl_ndb suites. RQG uses MTR V1 and that still has these in the default suite. Removing these from V1. Also removing references to ndb tests in some more disabled.def files
+    ------------------------------------------------------------
+    revno: 3097.34.15
+    committer: Tor Didriksen <tor.didriksen@oracle.com>
+    branch nick: 5.5-bugteam-bug58137
+    timestamp: Tue 2010-12-21 13:00:26 +0100
+    message:
+      Bug #58699 cannot build with gcc dbg on solaris
+    ------------------------------------------------------------
+    revno: 3097.34.14 [merge]
+    committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+    branch nick: mysql-5.5-bugteam
+    timestamp: Tue 2010-12-21 15:40:31 +0300
+    message:
+      automerge
+        ------------------------------------------------------------
+        revno: 2661.730.6 [merge]
+        committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+        branch nick: mysql-5.1-bugteam
+        timestamp: Tue 2010-12-21 15:35:54 +0300
+        message:
+          automerge
+    ------------------------------------------------------------
+    revno: 3097.34.13 [merge]
+    committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+    branch nick: mysql-5.5-bugteam
+    timestamp: Tue 2010-12-21 15:36:49 +0300
+    message:
+      automerge
+        ------------------------------------------------------------
+        revno: 3097.38.1 [merge]
+        committer: Sven Sandberg <sven.sandberg@oracle.com>
+        branch nick: 5.5-bugteam
+        timestamp: Tue 2010-12-21 13:14:22 +0100
+        message:
+          Merged fix for BUG#59084 from 5.1-bugteam to 5.5-bugfixing
+            ------------------------------------------------------------
+            revno: 2661.731.1
+            committer: Sven Sandberg <sven.sandberg@oracle.com>
+            branch nick: 5.1-bugteam
+            timestamp: Tue 2010-12-21 13:09:38 +0100
+            message:
+              BUG#59084: rpl_do_grant started to fail on FreeBSD (presumably after BUG#49978)
+              Problem: master executed a statement that would fail on slave
+              (namely, DROP USER 'create_rout_db'@'localhost').
+              Then the test did:
+                --let $rpl_only_running_threads= 1
+                --source include/rpl_reset.inc
+              rpl_reset.inc calls rpl_sync.inc, which first checks which of
+              the threads are running and then syncs those threads that are
+              running. If the SQL thread fails after the check, the sync will
+              fail. So there was a race in the test and it failed on some
+              slow hosts.
+              Fix: Don't replicate the failing statement.
+    ------------------------------------------------------------
+    revno: 3097.34.12 [merge]
+    committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+    branch nick: mysql-5.5-bugteam
+    timestamp: Tue 2010-12-21 15:32:15 +0300
+    message:
+      5.1-bugteam->5.5-bugteam merge
+        ------------------------------------------------------------
+        revno: 2661.730.5
+        committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+        branch nick: mysql-5.1-bugteam
+        timestamp: Tue 2010-12-21 15:30:07 +0300
+        message:
+          test case fix
+    ------------------------------------------------------------
+    revno: 3097.34.11 [merge]
+    committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+    branch nick: mysql-5.5-bugteam
+    timestamp: Tue 2010-12-21 14:50:03 +0300
+    message:
+      5.1-bugteam->5.5-bugteam merge
+        ------------------------------------------------------------
+        revno: 2661.730.4
+        committer: Sergey Glukhov <sergey.glukhov@oracle.com>
+        branch nick: mysql-5.1-bugteam
+        timestamp: Tue 2010-12-21 14:34:11 +0300
+        message:
+          Bug#58030 crash in Item_func_geometry_from_text::val_str
+          Item_sum_max/Item_sum_min incorrectly set null_value flag and
+          attempt to get result in parent functions leads to crash.
+          This happens due to double evaluation of the function argumet.
+          First evaluation happens in the comparator and second one
+          happens in Item_cache::cache_value().
+          The fix is to introduce new Item_cache object which
+          holds result of the argument and use this cached value
+          as an argument of the comparator.
+    ------------------------------------------------------------
+    revno: 3097.34.10 [merge]
+    committer: <Dao-Gang.Qu@sun.com>
+    branch nick: mysql-5.5-bugteam
+    timestamp: Tue 2010-12-21 18:23:20 +0800
+    message:
+      Bug #56662  	Assertion failed: next_insert_id == 0, file .\handler.cc
+            
+      Normally, auto_increment value is generated for the column by
+      inserting either NULL or 0 into it. NO_AUTO_VALUE_ON_ZERO
+      suppresses this behavior for 0 so that only NULL generates
+      the auto_increment value. This behavior is also followed by
+      a slave, specifically by the SQL Thread, when applying events
+      in the statement format from a master. However, when applying
+      events in the row format, the flag was ignored thus causing
+      an assertion failure:
+      "Assertion failed: next_insert_id == 0, file .\handler.cc"
+            
+      In fact, we never need to generate a auto_increment value for
+      the column when applying events in row format on slave. So we
+      don't allow it to happen by using 'MODE_NO_AUTO_VALUE_ON_ZERO'.
+            
+      Refactoring: Get rid of all the sql_mode checks to rows_log_event
+      when applying it for avoiding problems caused by the inconsistency
+      of the sql_mode on slave and master as the sql_mode is not set for
+      Rows_log_event.
+        ------------------------------------------------------------
+        revno: 2661.730.3
+        committer: <Dao-Gang.Qu@sun.com>
+        branch nick: mysql-5.1-bugteam
+        timestamp: Tue 2010-12-21 12:47:22 +0800
+        message:
+          Bug #56662  	Assertion failed: next_insert_id == 0, file .\handler.cc
+          
+          Normally, auto_increment value is generated for the column by
+          inserting either NULL or 0 into it. NO_AUTO_VALUE_ON_ZERO
+          suppresses this behavior for 0 so that only NULL generates
+          the auto_increment value. This behavior is also followed by
+          a slave, specifically by the SQL Thread, when applying events
+          in the statement format from a master. However, when applying
+          events in the row format, the flag was ignored thus causing
+          an assertion failure:
+          "Assertion failed: next_insert_id == 0, file .\handler.cc"
+          
+          In fact, we never need to generate a auto_increment value for
+          the column when applying events in row format on slave. So we
+          don't allow it to happen by using 'MODE_NO_AUTO_VALUE_ON_ZERO'.
+          
+          Refactoring: Get rid of all the sql_mode checks to rows_log_event
+          when applying it for avoiding problems caused by the inconsistency
+          of the sql_mode on slave and master as the sql_mode is not set for
+          Rows_log_event.
+    ------------------------------------------------------------
+    revno: 3097.34.9 [merge]
+    committer: Sven Sandberg <sven.sandberg@oracle.com>
+    branch nick: 5.5-bugteam
+    timestamp: Tue 2010-12-21 11:10:24 +0100
+    message:
+      null-merged fix for test failure that was specific to 5.1
+        ------------------------------------------------------------
+        revno: 2661.730.2
+        committer: Sven Sandberg <sven.sandberg@oracle.com>
+        branch nick: 5.1-bugteam
+        timestamp: Mon 2010-12-20 10:07:35 +0100
+        message:
+          Fixed pb failure.
+          Problem: Warnings for truncated data were generated on hosts with
+          long host names because @@hostname was inserted into a CHAR(40) column.
+          Fix: Change CHAR(40) to TEXT.
+    ------------------------------------------------------------
+    revno: 3097.34.8 [merge]
+    committer: Anitha Gopi <anitha.gopi@sun.com>
+    branch nick: mysql-5.5-bugteam
+    timestamp: Tue 2010-12-21 09:33:17 +0530
+    message:
+      Bug #59055 : Remove ndb tests from repository
+        ------------------------------------------------------------
+        revno: 3097.37.1
+        committer: Anitha Gopi <anitha.gopi@sun.com>
+        branch nick: mysql-5.5-bugteam-new
+        timestamp: Mon 2010-12-20 19:49:35 +0530
+        message:
+          Bug #59055 : Remove ndb tests from repository. Removal of tests from sys_vars is pending. It has some issues that are yet to be resolved
+    ------------------------------------------------------------
+    revno: 3097.34.7 [merge]
+    committer: Bjorn Munch <bjorn.munch@oracle.com>
+    branch nick: bug-55
+    timestamp: Mon 2010-12-20 15:15:01 +0100
+    message:
+      Some if simplifications in tests
+        ------------------------------------------------------------
+        revno: 3077.6.49 [merge]
+        committer: Bjorn Munch <bjorn.munch@oracle.com>
+        branch nick: upd-55
+        timestamp: Mon 2010-12-20 13:17:17 +0100
+        message:
+          null upmerge
+            ------------------------------------------------------------
+            revno: 2661.717.10 [merge]
+            committer: Bjorn Munch <bjorn.munch@oracle.com>
+            branch nick: upd-51
+            timestamp: Mon 2010-12-20 12:58:33 +0100
+            message:
+              new merge from 5.1
+        ------------------------------------------------------------
+        revno: 3077.6.48 [merge]
+        committer: Bjorn Munch <bjorn.munch@oracle.com>
+        branch nick: upd-55
+        timestamp: Mon 2010-12-20 12:56:02 +0100
+        message:
+          new merge from 5.5
+        ------------------------------------------------------------
+        revno: 3077.6.47
+        committer: Bjorn Munch <bjorn.munch@oracle.com>
+        branch nick: upd-55
+        timestamp: Fri 2010-12-17 11:30:59 +0100
+        message:
+          some more if stmt simplifications
+        ------------------------------------------------------------
+        revno: 3077.6.46 [merge]
+        committer: Bjorn Munch <bjorn.munch@oracle.com>
+        branch nick: upd-55
+        timestamp: Fri 2010-12-17 10:41:24 +0100
+        message:
+          null upmerge
+            ------------------------------------------------------------
+            revno: 2661.717.9 [merge]
+            committer: Bjorn Munch <bjorn.munch@oracle.com>
+            branch nick: upd-51
+            timestamp: Fri 2010-12-17 10:13:55 +0100
+            message:
+              merge from 5.1 main up to 3474
+        ------------------------------------------------------------
+        revno: 3077.6.45 [merge]
+        committer: Bjorn Munch <bjorn.munch@oracle.com>
+        branch nick: upd-55
+        timestamp: Fri 2010-12-17 10:37:46 +0100
+        message:
+          merge from 5.5 main
+    ------------------------------------------------------------
+    revno: 3097.34.6
+    committer: Tor Didriksen <tor.didriksen@oracle.com>
+    branch nick: 5.5-bugteam
+    timestamp: Mon 2010-12-20 10:00:14 +0100
+    message:
+      Bug #59021 Valgrind warning in key_unpack()
+      
+      Introduced by fix for Bug#57687
+    ------------------------------------------------------------
+    revno: 3097.34.5 [merge]
+    committer: Sven Sandberg <sven.sandberg@oracle.com>
+    branch nick: 5.5-bugteam
+    timestamp: Sun 2010-12-19 18:27:22 +0100
+    message:
+      Merged BUG#49978 with (BUG#51264 + BUG#51925) in 5.5-bugteam.
+        ------------------------------------------------------------
+        revno: 3097.36.3
+        committer: Jonathan Perkin <jonathan.perkin@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Fri 2010-12-17 23:13:33 +0000
+        message:
+          bug#51925: 5.5 installed header file layout is incorrect
+          
+          Additional space-in-directory-name protection.
+        ------------------------------------------------------------
+        revno: 3097.36.2
+        committer: Jonathan Perkin <jonathan.perkin@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Fri 2010-12-17 23:08:43 +0000
+        message:
+          bug#51925: 5.5 installed header file layout is incorrect
+          
+          The 'mysql' include sub-directory was copied directly into
+          include/ rather than retaining its own directory.
+          
+          Fix this, and update mysql_config which needs additional
+          logic to detect the correct prefix for includes.
+        ------------------------------------------------------------
+        revno: 3097.36.1
+        committer: Jonathan Perkin <jonathan.perkin@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Fri 2010-12-17 23:03:23 +0000
+        message:
+          bug#51264: MySQL.prefPane fails to run
+          
+          @prefix@ was erroneously set to '.' with the STANDALONE install
+          layout, when it should instead be set to CMAKE_INSTALL_PREFIX,
+          this was likely accidentally copied from scripts/CMakeLists.txt
+          which has similar handling specifically for mysql_install_db.sh
+          
+          mysql.server init script can now find the install, assuming the
+          defaults have been chosen.
+    ------------------------------------------------------------
+    revno: 3097.34.4
+    committer: Sven Sandberg <sven.sandberg@oracle.com>
+    branch nick: 5.5-bugteam
+    timestamp: Sun 2010-12-19 18:16:01 +0100
+    message:
+      Disabled part of rpl_change_master that fails sporadically because of BUG#59037.
+    ------------------------------------------------------------
+    revno: 3097.34.3 [merge]
+    committer: Sven Sandberg <sven.sandberg@oracle.com>
+    branch nick: 5.5-bugteam
+    timestamp: Sun 2010-12-19 18:15:12 +0100
+    message:
+      Merged BUG#49978 from 5.1-bugteam to 5.5-bugteam.
+        ------------------------------------------------------------
+        revno: 2661.730.1
+        committer: Sven Sandberg <sven.sandberg@oracle.com>
+        branch nick: 5.1-bugteam
+        timestamp: Sun 2010-12-19 18:07:28 +0100
+        message:
+          BUG#49978: Replication tests don't clean up replication state at the end
+          Major replication test framework cleanup. This does the following:
+           - Ensure that all tests clean up the replication state when they
+             finish, by making check-testcase check the output of SHOW SLAVE STATUS.
+             This implies:
+              - Slave must not be running after test finished. This is good
+                because it removes the risk for sporadic errors in subsequent
+                tests when a test forgets to sync correctly.
+              - Slave SQL and IO errors must be cleared when test ends. This is
+                good because we will notice if a test gets an unexpected error in
+                the slave threads near the end.
+              - We no longer have to clean up before a test starts.
+           - Ensure that all tests that wait for an error in one of the slave
+             threads waits for a specific error. It is no longer possible to
+             source wait_for_slave_[sql|io]_to_stop.inc when there is an error
+             in one of the slave threads. This is good because:
+              - If a test expects an error but there is a bug that causes
+                another error to happen, or if it stops the slave thread without
+                an error, then we will notice.
+              - When developing tests, wait_for_*_to_[start|stop].inc will fail
+                immediately if there is an error in the relevant slave thread.
+                Before this patch, we had to wait for the timeout.
+           - Remove duplicated and repeated code for setting up unusual replication
+             topologies. Now, there is a single file that is capable of setting
+             up arbitrary topologies (include/rpl_init.inc, but
+             include/master-slave.inc is still available for the most common
+             topology). Tests can now end with include/rpl_end.inc, which will clean
+             up correctly no matter what topology is used. The topology can be
+             changed with include/rpl_change_topology.inc.
+           - Improved debug information when tests fail. This includes:
+              - debug info is printed on all servers configured by include/rpl_init.inc
+              - User can set $rpl_debug=1, which makes auxiliary replication files
+                print relevant debug info.
+           - Improved documentation for all auxiliary replication files. Now they
+             describe purpose, usage, parameters, and side effects.
+           - Many small code cleanups:
+              - Made have_innodb.inc output a sensible error message.
+              - Moved contents of rpl000017-slave.sh into rpl000017.test
+              - Added mysqltest variables that expose the current state of
+                disable_warnings/enable_warnings and friends.
+              - Too many to list here: see per-file comments for details.
+    ------------------------------------------------------------
+    revno: 3097.34.2 [merge]
+    committer: Sergey Vojtovich <sergey.vojtovich@oracle.com>
+    branch nick: mysql-5.5-bugteam-push
+    timestamp: Fri 2010-12-17 19:08:05 +0300
+    message:
+      Merge fix for BUG58948 to 5.5-bugteam.
+        ------------------------------------------------------------
+        revno: 3097.35.1
+        committer: Sergey Vojtovich <sergey.vojtovich@oracle.com>
+        branch nick: mysql-5.5-bugteam-bug58948
+        timestamp: Fri 2010-12-17 11:56:43 +0300
+        message:
+          BUG#58948 - Valgrind warning in do_handle_one_connection()
+          
+          Fixed that proxy_user may be used uninitialized.
+    ------------------------------------------------------------
+    revno: 3097.34.1
+    committer: Jorgen Loland <jorgen.loland@oracle.com>
+    branch nick: mysql-5.5-bugteam
+    timestamp: Fri 2010-12-17 13:52:39 +0100
+    message:
+      BUG#58985: Assertion tab->quick->index != 64 failed in make_join_select() 
+                 in sql_select.cc
+      
+      Follow-up patch. Add sanity check for quick select when it is
+      decided that it should be used.
+------------------------------------------------------------
+revno: 3133 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Fri 2010-12-17 15:28:40 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 2661.712.4 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.1-security
+    timestamp: Fri 2010-12-17 15:10:15 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 1810.4000.3 [merge]
+        committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+        branch nick: merge-5.0-security
+        timestamp: Fri 2010-12-17 15:02:10 +0200
+        message:
+          merge
+    ------------------------------------------------------------
+    revno: 2661.712.3 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.1-security
+    timestamp: Fri 2010-12-17 15:05:50 +0200
+    message:
+      merge
+    ------------------------------------------------------------
+    revno: 2661.712.2 [merge]
+    committer: Kristofer Pettersson <kristofer.pettersson@oracle.com>
+    branch nick: mysql-5.1-security
+    timestamp: Thu 2010-12-16 15:10:23 +0100
+    message:
+      automerge
+------------------------------------------------------------
+revno: 3132 [merge]
+committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+branch nick: merge-5.5-security
+timestamp: Fri 2010-12-17 15:10:40 +0200
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 3097.18.75 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.5-bugteam
+    timestamp: Fri 2010-12-17 14:47:33 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 2661.720.19 [merge]
+        committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+        branch nick: merge-5.1-bugteam
+        timestamp: Fri 2010-12-17 14:44:35 +0200
+        message:
+          merge
+            ------------------------------------------------------------
+            revno: 1810.4001.4
+            committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+            branch nick: merge-5.0-bugteam
+            timestamp: Fri 2010-12-17 14:42:30 +0200
+            message:
+              tree details update to main
+    ------------------------------------------------------------
+    revno: 3097.18.74 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.5-bugteam
+    timestamp: Fri 2010-12-17 13:22:19 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 3069.11.1 [merge]
+        committer: MySQL Build Team<build@mysql.com>
+        branch nick: mysql-5.5-security-fixed
+        timestamp: Thu 2010-11-18 17:33:34 +0100
+        message:
+          Empty merge of mysql-5.1.53 into 5.5.
+          Source changes were already upmerged.
+    ------------------------------------------------------------
+    revno: 3097.18.73 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.5-bugteam
+    timestamp: Fri 2010-12-17 13:18:43 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 2661.720.18 [merge]
+        committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+        branch nick: merge-5.1-bugteam
+        timestamp: Fri 2010-12-17 13:06:49 +0200
+        message:
+          merge
+    ------------------------------------------------------------
+    revno: 3097.18.72 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.5-bugteam
+    timestamp: Fri 2010-12-17 13:11:34 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 3097.32.7
+        committer: Alexander Nozdrin <alexander.nozdrin@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Fri 2010-12-17 13:48:00 +0300
+        message:
+          Merge follow-up: update test result.
+        ------------------------------------------------------------
+        revno: 3097.32.6
+        committer: Jorgen Loland <jorgen.loland@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Fri 2010-12-17 10:02:24 +0100
+        message:
+          BUG#58985: Assertion tab->quick->index != 64 failed in 
+                     make_join_select() in sql_select.cc
+          
+          Caused by incorrect ASSERT introduced by BUG#58456. Quick selects 
+          may have index == MAX_KEY if it merges indices.
+        ------------------------------------------------------------
+        revno: 3097.32.5 [merge]
+        committer: Luis Soares <luis.soares@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Fri 2010-12-17 01:29:53 +0000
+        message:
+          BUG#46166
+          
+          Automerge from mysql-5.1-bugteam.
+            ------------------------------------------------------------
+            revno: 2661.729.2
+            committer: Luis Soares <luis.soares@oracle.com>
+            branch nick: mysql-5.1-bugteam
+            timestamp: Fri 2010-12-17 01:17:03 +0000
+            message:
+              BUG#46166
+              
+              Post-push fixes:
+              
+                - fixed platform dependent result files
+                - appeasing valgrind warnings:
+                 
+                  Fault injection was also uncovering a previously existing 
+                  potential mem leaks. For BUG#46166 testing purposes, fixed 
+                  by forcing handling the leak when injecting faults.
+        ------------------------------------------------------------
+        revno: 3097.32.4 [merge]
+        committer: Luis Soares <luis.soares@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Thu 2010-12-16 19:15:55 +0000
+        message:
+          empty merge from mysql-5.1-bugteam.
+            ------------------------------------------------------------
+            revno: 2661.729.1 [merge]
+            committer: Luis Soares <luis.soares@oracle.com>
+            branch nick: mysql-5.1-bugteam
+            timestamp: Thu 2010-12-16 19:11:08 +0000
+            message:
+              BUG#46166
+              
+              Merging to latest mysql-5.1-bugteam.
+        ------------------------------------------------------------
+        revno: 3097.32.3 [merge]
+        committer: Luis Soares <luis.soares@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Thu 2010-12-16 19:12:31 +0000
+        message:
+          BUG#46166
+          
+          Merging to latest mysql-5.5-bugteam.
+            ------------------------------------------------------------
+            revno: 3097.33.2
+            committer: Luis Soares <luis.soares@oracle.com>
+            branch nick: mysql-5.5-bugteam
+            timestamp: Tue 2010-12-07 16:55:25 +0000
+            message:
+              BUG#46166
+              
+              Post merge fixes for mysql-5.5-bugteam.
+            ------------------------------------------------------------
+            revno: 3097.33.1 [merge]
+            committer: Luis Soares <luis.soares@oracle.com>
+            branch nick: mysql-5.5-bugteam
+            timestamp: Tue 2010-12-07 16:11:13 +0000
+            message:
+              BUG#46166
+              
+              Manual merge from mysql-5.1-bugteam into mysql-5.5-bugteam.
+              
+              Conflicts
+              =========
+              
+              Text conflict in sql/log.cc
+              Text conflict in sql/log.h
+              Text conflict in sql/slave.cc
+              Text conflict in sql/sql_parse.cc
+              Text conflict in sql/sql_priv.h
+                ------------------------------------------------------------
+                revno: 2661.728.2
+                committer: Luis Soares <luis.soares@oracle.com>
+                branch nick: mysql-5.1-bugteam
+                timestamp: Tue 2010-12-07 15:48:18 +0000
+                message:
+                  BUG#46166
+                  
+                  Post merge fix. In write_incident, check if binlog file is
+                  opened before actually trying to write the incident event.
+                ------------------------------------------------------------
+                revno: 2661.728.1 [merge]
+                committer: Luis Soares <luis.soares@oracle.com>
+                branch nick: mysql-5.1-bugteam
+                timestamp: Tue 2010-12-07 15:46:10 +0000
+                message:
+                  BUG#46166
+                  
+                  Automerged bzr bundle from bug report.
+                    ------------------------------------------------------------
+                    revno: 2661.727.1
+                    committer: Luis Soares <luis.soares@oracle.com>
+                    branch nick: mysql-5.1-bugteam
+                    timestamp: Tue 2010-11-30 23:32:51 +0000
+                    message:
+                      BUG#46166: MYSQL_BIN_LOG::new_file_impl is not propagating error 
+                                 when generating new name.
+                            
+                      If find_uniq_filename returns an error, then this error is not
+                      being propagated upwards, and execution does not report error to
+                      the user (although a entry in the error log is generated).
+                                        
+                      Additionally, some more errors were ignored in new_file_impl:
+                      - when writing the rotate event
+                      - when reopening the index and binary log file
+                                        
+                      This patch addresses this by propagating the error up in the
+                      execution stack. Furthermore, when rotation of the binary log
+                      fails, an incident event is written, because there may be a
+                      chance that some changes for a given statement, were not properly
+                      logged. For example, in SBR, LOAD DATA INFILE statement requires
+                      more than one event to be logged, should rotation fail while
+                      logging part of the LOAD DATA events, then the logged data would
+                      become inconsistent with the data in the storage engine.
+        ------------------------------------------------------------
+        revno: 3097.32.2 [merge]
+        committer: Alexander Nozdrin <alexander.nozdrin@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Thu 2010-12-16 21:43:21 +0300
+        message:
+          Manual merge from mysql-5.5.
+        ------------------------------------------------------------
+        revno: 3097.32.1
+        committer: Jorgen Loland <jorgen.loland@oracle.com>
+        branch nick: mysql-5.5-bugteam
+        timestamp: Thu 2010-12-16 12:25:02 +0100
+        message:
+          BUG#58456 - Assertion 0 in QUICK_INDEX_MERGE_SELECT::need_sorted_output 
+                      in opt_range.h
+          
+          In this bug, there are two alternative access plans: 
+           * Index merge range access
+           * Const ref access
+          
+          best_access_path() decided that the ref access was preferrable, 
+          but make_join_select() still decided to point 
+          SQL_SELECT::quick to the index merge because the table had 
+          type==JT_CONST which was not handled. 
+          
+          At the same time the table's ref.key still referred to the 
+          index the ref access would use indicating that ref access 
+          should be used. In this state, different parts of the 
+          optimizer code have different perceptions of which access path
+          is in use (ref or range).
+          
+          test_if_skip_sort_order() was called to check if the ref access
+          needed ordering, but test_if_skip_sort_order() got confused and
+          requested the index merge to return records in sorted order. 
+          Index merge cannot do this, and fired an ASSERT.
+          
+          The fix is to take join_tab->type==JT_CONST into concideration
+          when make_join_select() decides whether or not to use the 
+          range access method.
+    ------------------------------------------------------------
+    revno: 3097.18.71 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.5-bugteam
+    timestamp: Fri 2010-12-17 13:05:10 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 2661.720.17
+        committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+        branch nick: merge-5.1-bugteam
+        timestamp: Fri 2010-12-17 10:20:44 +0200
+        message:
+          post-merge test suite update
+    ------------------------------------------------------------
+    revno: 3097.18.70
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.5-bugteam
+    timestamp: Fri 2010-12-17 10:22:54 +0200
+    message:
+      post-merge test result update
+    ------------------------------------------------------------
+    revno: 3097.18.69 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.5-bugteam
+    timestamp: Thu 2010-12-16 18:54:03 +0200
+    message:
+      merge
+        ------------------------------------------------------------
+        revno: 2661.720.16 [merge]
+        committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+        branch nick: merge-5.1-bugteam
+        timestamp: Thu 2010-12-16 16:40:52 +0200
+        message:
+          merge
+            ------------------------------------------------------------
+            revno: 2661.661.16 [merge]
+            committer: Sunanda Menon <sunanda.menon@oracle.com>
+            branch nick: mysql-5.1
+            timestamp: Wed 2010-12-15 06:40:55 +0100
+            message:
+              Merge from mysql-5.1.54-release
+    ------------------------------------------------------------
+    revno: 3097.18.68 [merge]
+    committer: Georgi Kodinov <Georgi.Kodinov@Oracle.com>
+    branch nick: merge-5.5-bugteam
+    timestamp: Thu 2010-12-16 18:44:17 +0200
+    message:
+      merge mysql-5.5->mysql-5.5-bugteam
+        ------------------------------------------------------------
+        revno: 3077.12.1 [merge]
+        committer: Jonathan Perkin <jonathan.perkin@oracle.com>
+        branch nick: mysql-5.5
+        timestamp: Thu 2010-12-16 11:13:58 +0100
+        message:
+          Merge from mysql-5.5.8-release
+            ------------------------------------------------------------
+            revno: 3120.1.9
+            tags: mysql-5.5.8
+            committer: Ramil Kalimullin <ramil@mysql.com>
+            branch nick: mysql-5.5.8-release
+            timestamp: Fri 2010-12-03 20:49:08 +0300
+            message:
+              Fix for bug #58669: read_only not enforced on 5.5.x
+              
+              Problem: "read-only" option ignored if it's enabled in
+              the command line (or in the config file).
+              
+              Fix: sync opt_readonly (which is used for checks) with 
+              read_only (global var) when all server options are handled.
