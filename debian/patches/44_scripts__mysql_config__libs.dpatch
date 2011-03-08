@@ -1,24 +1,31 @@
 #! /bin/sh /usr/share/dpatch/dpatch-run
-## 99-unnamed.dpatch by  <ch@debian.org>
+## 44_scripts__mysql_config__libs.dpatch by  <sven@imperator.oops.nntp.de>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: Removes unnecessary library dependencies. See #390692
 
 @DPATCH@
-diff -Nur mysql-dfsg-5.1-5.1.31.orig/scripts/mysql_config.sh mysql-dfsg-5.1-5.1.31/scripts/mysql_config.sh
---- mysql-dfsg-5.1-5.1.31.orig/scripts/mysql_config.sh  2009-01-19 17:30:55.000000000 +0100
-+++ mysql-dfsg-5.1-5.1.31/scripts/mysql_config.sh       2009-02-08 17:17:48.000000000 +0100
-@@ -104,10 +104,10 @@
+
+Common subdirectories: mysql-5.5.orig/scripts//.svn and mysql-5.5/scripts//.svn
+diff -u mysql-5.5.orig/scripts//mysql_config.sh mysql-5.5/scripts//mysql_config.sh
+--- mysql-5.5.orig/scripts//mysql_config.sh	2011-03-08 23:00:18.000000000 +0100
++++ mysql-5.5/scripts//mysql_config.sh	2011-03-08 23:09:02.000000000 +0100
+@@ -110,10 +110,10 @@
  
  # Create options 
  # We intentionally add a space to the beginning and end of lib strings, simplifies replace later
 -libs=" $ldflags -L$pkglibdir -lmysqlclient @ZLIB_DEPS@ @NON_THREADED_LIBS@"
 +libs=" $ldflags -L$pkglibdir -lmysqlclient"
  libs="$libs @openssl_libs@ @STATIC_NSS_FLAGS@ "
--libs_r=" $ldflags -L$pkglibdir -lmysqlclient_r @ZLIB_DEPS@ @LIBS@ @openssl_libs@ "
--embedded_libs=" $ldflags -L$pkglibdir -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @innodb_system_libs@ @openssl_libs@ "
+-libs_r=" $ldflags -L$pkglibdir -lmysqlclient_r @ZLIB_DEPS@ @CLIENT_LIBS@ @openssl_libs@ "
+-embedded_libs=" $ldflags -L$pkglibdir -lmysqld @LIBDL@ @ZLIB_DEPS@ @LIBS@ @WRAPLIBS@ @openssl_libs@ "
 +libs_r=" $ldflags -L$pkglibdir -lmysqlclient_r @openssl_libs@ "
-+embedded_libs=" $ldflags -L$pkglibdir -lmysqld @LIBDL@ @WRAPLIBS@ @innodb_system_libs@ @openssl_libs@ "
++embedded_libs=" $ldflags -L$pkglibdir -lmysqld @LIBDL@ @WRAPLIBS@ @openssl_libs@ "
  
  if [ -r "$pkglibdir/libmygcc.a" ]; then
    # When linking against the static library with a different version of GCC
+Only in mysql-5.5/scripts/: mysql_config.sh.rej
+Only in mysql-5.5/scripts/: mysql_config.sh.~1~
+Only in mysql-5.5/scripts/: mysql_config.sh.~2~
+Only in mysql-5.5/scripts/: mysql_system_tables_data.sql.rej
+Only in mysql-5.5/scripts/: mysql_system_tables_data.sql.~1~
