@@ -26,19 +26,19 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:2001
+#: ../mysql-server-5.5.templates:2001
 msgid "Really proceed with downgrade?"
 msgstr "Opravdu pokračovat v degradaci?"
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:2001
+#: ../mysql-server-5.5.templates:2001
 msgid "A file named /var/lib/mysql/debian-*.flag exists on this system."
 msgstr "V systému existuje soubor /var/lib/mysql/debian-*.flag."
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:2001
+#: ../mysql-server-5.5.templates:2001
 msgid ""
 "Such a file is an indication that a mysql-server package with a higher "
 "version has been installed previously."
@@ -47,7 +47,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:2001
+#: ../mysql-server-5.5.templates:2001
 msgid ""
 "There is no guarantee that the version you're currently installing will be "
 "able to use the current databases."
@@ -57,13 +57,13 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../mysql-server-5.1.templates:3001
+#: ../mysql-server-5.5.templates:3001
 msgid "Important note for NIS/YP users"
 msgstr "Důležitá poznámka pro uživatele NIS/YP"
 
 #. Type: note
 #. Description
-#: ../mysql-server-5.1.templates:3001
+#: ../mysql-server-5.5.templates:3001
 msgid ""
 "Using MySQL under NIS/YP requires a mysql user account to be added on the "
 "local system with:"
@@ -73,7 +73,7 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../mysql-server-5.1.templates:3001
+#: ../mysql-server-5.5.templates:3001
 msgid ""
 "You should also check the permissions and ownership of the /var/lib/mysql "
 "directory:"
@@ -83,13 +83,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:4001
+#: ../mysql-server-5.5.templates:4001
 msgid "Remove all MySQL databases?"
 msgstr "Odstranit všechny MySQL databáze?"
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:4001
+#: ../mysql-server-5.5.templates:4001
 msgid ""
 "The /var/lib/mysql directory which contains the MySQL databases is about to "
 "be removed."
@@ -98,7 +98,7 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:4001
+#: ../mysql-server-5.5.templates:4001
 msgid ""
 "If you're removing the MySQL package in order to later install a more recent "
 "version or if a different mysql-server package is already using it, the data "
@@ -110,13 +110,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:5001
+#: ../mysql-server-5.5.templates:5001
 msgid "Start the MySQL server on boot?"
 msgstr "Spustit MySQL server při startu systému?"
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:5001
+#: ../mysql-server-5.5.templates:5001
 msgid ""
 "The MySQL server can be launched automatically at boot time or manually with "
 "the '/etc/init.d/mysql start' command."
@@ -126,13 +126,13 @@ msgstr ""
 
 #. Type: password
 #. Description
-#: ../mysql-server-5.1.templates:6001
+#: ../mysql-server-5.5.templates:6001
 msgid "New password for the MySQL \"root\" user:"
 msgstr "Nové heslo MySQL uživatele „root“:"
 
 #. Type: password
 #. Description
-#: ../mysql-server-5.1.templates:6001
+#: ../mysql-server-5.5.templates:6001
 msgid ""
 "While not mandatory, it is highly recommended that you set a password for "
 "the MySQL administrative \"root\" user."
@@ -142,25 +142,25 @@ msgstr ""
 
 #. Type: password
 #. Description
-#: ../mysql-server-5.1.templates:6001
+#: ../mysql-server-5.5.templates:6001
 msgid "If this field is left blank, the password will not be changed."
 msgstr "Ponecháte-li pole prázdné, heslo se nezmění."
 
 #. Type: password
 #. Description
-#: ../mysql-server-5.1.templates:7001
+#: ../mysql-server-5.5.templates:7001
 msgid "Repeat password for the MySQL \"root\" user:"
 msgstr "Zopakujte heslo MySQL uživatele „root“:"
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:8001
+#: ../mysql-server-5.5.templates:8001
 msgid "Unable to set password for the MySQL \"root\" user"
 msgstr "Nelze nastavit heslo MySQL uživatele „root“"
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:8001
+#: ../mysql-server-5.5.templates:8001
 msgid ""
 "An error occurred while setting the password for the MySQL administrative "
 "user. This may have happened because the account already has a password, or "
@@ -172,46 +172,46 @@ msgstr ""
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:8001
+#: ../mysql-server-5.5.templates:8001
 msgid "You should check the account's password after the package installation."
 msgstr "Po instalaci balíku byste měli heslo ověřit."
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:8001
+#: ../mysql-server-5.5.templates:8001
 msgid ""
-"Please read the /usr/share/doc/mysql-server-5.1/README.Debian file for more "
+"Please read the /usr/share/doc/mysql-server-5.5/README.Debian file for more "
 "information."
 msgstr ""
-"Více informací naleznete v /usr/share/doc/mysql-server-5.1/README.Debian."
+"Více informací naleznete v /usr/share/doc/mysql-server-5.5/README.Debian."
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:9001
+#: ../mysql-server-5.5.templates:9001
 msgid "Password input error"
 msgstr "Chyba při zadávání hesla"
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:9001
+#: ../mysql-server-5.5.templates:9001
 msgid "The two passwords you entered were not the same. Please try again."
 msgstr "Zadaná hesla jsou různá. Zkuste to prosím znovu."
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:10001
+#: ../mysql-server-5.5.templates:10001
 msgid "NDB Cluster seems to be in use"
 msgstr "Zdá se, že používáte NDB Cluster"
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:10001
+#: ../mysql-server-5.5.templates:10001
 msgid ""
-"MySQL-5.1 no longer provides NDB Cluster support. Please migrate to the new "
+"MySQL-5.5 no longer provides NDB Cluster support. Please migrate to the new "
 "mysql-cluster package and remove all lines starting with \"ndb\" from all "
 "config files below /etc/mysql/."
 msgstr ""
-"MySQL-5.1 již NDB Clustery nepodporuje. Přejděte prosím na balík mysql-"
+"MySQL-5.5 již NDB Clustery nepodporuje. Přejděte prosím na balík mysql-"
 "cluster a z konfiguračních souborů v /etc/mysql/ odstraňte všechny řádky "
 "začínající „ndb“."
 
@@ -229,14 +229,14 @@ msgstr ""
 #~ "Recent versions of MySQL can no longer use the old ISAM table format and "
 #~ "it is necessary to convert your tables to e.g. MyISAM before upgrading by "
 #~ "using \"mysql_convert_table_format\" or \"ALTER TABLE x ENGINE=MyISAM\". "
-#~ "The installation of mysql-server-5.1 will now abort. In case your old "
+#~ "The installation of mysql-server-5.5 will now abort. In case your old "
 #~ "mysql-server-4.1 gets removed nevertheless just reinstall it to convert "
 #~ "those tables."
 #~ msgstr ""
 #~ "Poslední verze MySQL již nemohou používat starý formát tabulek ISAM a "
 #~ "před aktualizací je nutné převést tyto tabulky např. do formátu MyISAM "
 #~ "pomocí \"mysql_convert_table_format\" nebo \"ALTER TABLE x ENGINE=MyISAM"
-#~ "\". Instalace mysql-server-5.1 se nyní přeruší. V případě, že se mezitím "
+#~ "\". Instalace mysql-server-5.5 se nyní přeruší. V případě, že se mezitím "
 #~ "odinstaloval původní mysql-server-4.1, jednoduše jej znovu nainstalujte a "
 #~ "tabulky převeďte."
 

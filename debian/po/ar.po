@@ -27,19 +27,19 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:2001
+#: ../mysql-server-5.5.templates:2001
 msgid "Really proceed with downgrade?"
 msgstr "هل فعلاً تريد التثبيط؟"
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:2001
+#: ../mysql-server-5.5.templates:2001
 msgid "A file named /var/lib/mysql/debian-*.flag exists on this system."
 msgstr "هناك ملف مسمى /var/lib/mysql/debian-*.flag موجود على هذا النظام."
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:2001
+#: ../mysql-server-5.5.templates:2001
 msgid ""
 "Such a file is an indication that a mysql-server package with a higher "
 "version has been installed previously."
@@ -47,7 +47,7 @@ msgstr "وجود هذا الملف يعني أن حزمة mysql-server أحدث 
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:2001
+#: ../mysql-server-5.5.templates:2001
 msgid ""
 "There is no guarantee that the version you're currently installing will be "
 "able to use the current databases."
@@ -57,13 +57,13 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../mysql-server-5.1.templates:3001
+#: ../mysql-server-5.5.templates:3001
 msgid "Important note for NIS/YP users"
 msgstr "ملاحظة هامة لمستخدمي NIS/YP"
 
 #. Type: note
 #. Description
-#: ../mysql-server-5.1.templates:3001
+#: ../mysql-server-5.5.templates:3001
 msgid ""
 "Using MySQL under NIS/YP requires a mysql user account to be added on the "
 "local system with:"
@@ -73,7 +73,7 @@ msgstr ""
 
 #. Type: note
 #. Description
-#: ../mysql-server-5.1.templates:3001
+#: ../mysql-server-5.5.templates:3001
 msgid ""
 "You should also check the permissions and ownership of the /var/lib/mysql "
 "directory:"
@@ -81,13 +81,13 @@ msgstr "يجب عليك كذلك أن تتحق من صلاحيات وملكية 
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:4001
+#: ../mysql-server-5.5.templates:4001
 msgid "Remove all MySQL databases?"
 msgstr "إزالة جميع قواعد بيانات MySQL؟"
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:4001
+#: ../mysql-server-5.5.templates:4001
 msgid ""
 "The /var/lib/mysql directory which contains the MySQL databases is about to "
 "be removed."
@@ -95,7 +95,7 @@ msgstr "الدليل /var/lib/mysql الذي يحتوي قواعد بيانات 
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:4001
+#: ../mysql-server-5.5.templates:4001
 msgid ""
 "If you're removing the MySQL package in order to later install a more recent "
 "version or if a different mysql-server package is already using it, the data "
@@ -106,13 +106,13 @@ msgstr ""
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:5001
+#: ../mysql-server-5.5.templates:5001
 msgid "Start the MySQL server on boot?"
 msgstr "تشغيل خادم MySQL عند الإقلاع؟"
 
 #. Type: boolean
 #. Description
-#: ../mysql-server-5.1.templates:5001
+#: ../mysql-server-5.5.templates:5001
 msgid ""
 "The MySQL server can be launched automatically at boot time or manually with "
 "the '/etc/init.d/mysql start' command."
@@ -122,13 +122,13 @@ msgstr ""
 
 #. Type: password
 #. Description
-#: ../mysql-server-5.1.templates:6001
+#: ../mysql-server-5.5.templates:6001
 msgid "New password for the MySQL \"root\" user:"
 msgstr "كلمة المرور الجديدة لمستخد \"root\" الخاص بـMySQL:"
 
 #. Type: password
 #. Description
-#: ../mysql-server-5.1.templates:6001
+#: ../mysql-server-5.5.templates:6001
 msgid ""
 "While not mandatory, it is highly recommended that you set a password for "
 "the MySQL administrative \"root\" user."
@@ -138,25 +138,25 @@ msgstr ""
 
 #. Type: password
 #. Description
-#: ../mysql-server-5.1.templates:6001
+#: ../mysql-server-5.5.templates:6001
 msgid "If this field is left blank, the password will not be changed."
 msgstr "إن تركت الحقل فارغاً، فلن يتم تغيير كلمة المرور."
 
 #. Type: password
 #. Description
-#: ../mysql-server-5.1.templates:7001
+#: ../mysql-server-5.5.templates:7001
 msgid "Repeat password for the MySQL \"root\" user:"
 msgstr "كرّر كلمة المرور للمستخدم \"root\" التابع لخادم MySQL:"
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:8001
+#: ../mysql-server-5.5.templates:8001
 msgid "Unable to set password for the MySQL \"root\" user"
 msgstr "تعذر تعيين كلمة مرور للمستخدم \"root\" الخاص بـMySQL."
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:8001
+#: ../mysql-server-5.5.templates:8001
 msgid ""
 "An error occurred while setting the password for the MySQL administrative "
 "user. This may have happened because the account already has a password, or "
@@ -168,47 +168,47 @@ msgstr ""
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:8001
+#: ../mysql-server-5.5.templates:8001
 msgid "You should check the account's password after the package installation."
 msgstr "يجب أن تتحق من كلمة مرور الحساب بعد تثبيت الحزمة."
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:8001
+#: ../mysql-server-5.5.templates:8001
 msgid ""
-"Please read the /usr/share/doc/mysql-server-5.1/README.Debian file for more "
+"Please read the /usr/share/doc/mysql-server-5.5/README.Debian file for more "
 "information."
 msgstr ""
-"الرجاء قراءة الملف /usr/share/doc/mysql-server-5.1/README.Debian لمزيد "
+"الرجاء قراءة الملف /usr/share/doc/mysql-server-5.5/README.Debian لمزيد "
 "منالمعلومات."
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:9001
+#: ../mysql-server-5.5.templates:9001
 msgid "Password input error"
 msgstr "خطأ في إدخال كلمة المرور"
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:9001
+#: ../mysql-server-5.5.templates:9001
 msgid "The two passwords you entered were not the same. Please try again."
 msgstr "كلمتا المرور اللتان كتبتهما غير متطابقتين. الرجاء المحاولة مجدداً."
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:10001
+#: ../mysql-server-5.5.templates:10001
 msgid "NDB Cluster seems to be in use"
 msgstr "يبدو أن خدمة NDB Cluster قيد الاستخدام"
 
 #. Type: error
 #. Description
-#: ../mysql-server-5.1.templates:10001
+#: ../mysql-server-5.5.templates:10001
 msgid ""
-"MySQL-5.1 no longer provides NDB Cluster support. Please migrate to the new "
+"MySQL-5.5 no longer provides NDB Cluster support. Please migrate to the new "
 "mysql-cluster package and remove all lines starting with \"ndb\" from all "
 "config files below /etc/mysql/."
 msgstr ""
-"لم يعد خادم MySQL-5.1 يوفّر دعم NDB Cluster. الرجاء الانتقال إلى حزمةmysql-"
+"لم يعد خادم MySQL-5.5 يوفّر دعم NDB Cluster. الرجاء الانتقال إلى حزمةmysql-"
 "cluster الجديدة وإزالة جميع الأسطر التي تبدأ بكلمة \"ndb\" من جميعملفات "
 "التهيئة ضمن /etc/mysql/."
 
