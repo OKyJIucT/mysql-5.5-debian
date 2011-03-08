@@ -81,7 +81,7 @@ endif
 		-DCMAKE_BUILD_TYPE:STRING="RelWithDebInfo" \
 		-DWITH_ARCHIVE_STORAGE_ENGINE:BOOL="1" \
 		-DWITH_UNIT_TESTS:BOOL="0" \
-		-DWITH_SSL:STRING="yes" 
+		-DWITH_SSL:STRING="yes"'
 
 #	    ../configure \
 #		--build=${DEB_BUILD_GNU_TYPE} \
