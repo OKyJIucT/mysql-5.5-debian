@@ -75,13 +75,13 @@ endif
 	    	CXX=$${MYSQL_BUILD_CXX:-g++} \
 	    	CXXFLAGS=$${MYSQL_BUILD_CXXFLAGS:-"-O3 -DBIG_JOINS=1 -felide-constructors -fno-exceptions -fno-rtti ${FORCE_FPIC_CFLAGS}"} \
 	    cmake \
-              -DCMAKE_INSTALL_PREFIX:PATH="/usr" \
-              -DMYSQL_DATADIR:PATH="/var/lib/mysql" \
-              -DWITH_READLINE:BOOL="1" \
-              -DCMAKE_BUILD_TYPE:STRING="RelWithDebInfo" \
-              -DWITH_ARCHIVE_STORAGE_ENGINE:BOOL="1" \
-              -DWITH_UNIT_TESTS:BOOL="0" \
-              -DWITH_SSL:STRING="yes" 
+		-DCMAKE_INSTALL_PREFIX:PATH="/usr" \
+		-DMYSQL_DATADIR:PATH="/var/lib/mysql" \
+		-DWITH_READLINE:BOOL="1" \
+		-DCMAKE_BUILD_TYPE:STRING="RelWithDebInfo" \
+		-DWITH_ARCHIVE_STORAGE_ENGINE:BOOL="1" \
+		-DWITH_UNIT_TESTS:BOOL="0" \
+		-DWITH_SSL:STRING="yes" 
 
 #	    ../configure \
 #		--build=${DEB_BUILD_GNU_TYPE} \
