@@ -3,7 +3,7 @@
 export DH_VERBOSE=1
 export DEB_BUILD_HARDENING=1
 
-PACKAGE=mysql-5.1
+PACKAGE=mysql-5.5
 
 include /usr/share/dpatch/dpatch.make
 
@@ -241,27 +241,27 @@ install install-pic: build
 
 	# mysql-server
 	install -m 0755 $(BUILDDIR)/scripts/mysqld_safe $(TMP)/usr/bin/mysqld_safe
-	mkdir -p $(TMP)/usr/share/doc/mysql-server-5.1/examples
-	mv $(TMP)/usr/share/mysql/*cnf 	    $(TMP)/usr/share/doc/mysql-server-5.1/examples/
+	mkdir -p $(TMP)/usr/share/doc/mysql-server-5.5/examples
+	mv $(TMP)/usr/share/mysql/*cnf 	    $(TMP)/usr/share/doc/mysql-server-5.5/examples/
 	rm -vf $(TMP)/usr/share/mysql/mi_test_all* \
 	       $(TMP)/usr/share/mysql/mysql-log-rotate \
 	       $(TMP)/usr/share/mysql/mysql.server \
 	       $(TMP)/usr/share/mysql/binary-configure
-	nm -n $(BUILDDIR)/sql/mysqld |gzip -9 > $(TMP)/usr/share/doc/mysql-server-5.1/mysqld.sym.gz
+	nm -n $(BUILDDIR)/sql/mysqld |gzip -9 > $(TMP)/usr/share/doc/mysql-server-5.5/mysqld.sym.gz
 	install -m 0755 debian/additions/echo_stderr $(TMP)/usr/share/mysql/
 	install -m 0755 debian/additions/debian-start $(TMP)/etc/mysql/
 	install -m 0755 debian/additions/debian-start.inc.sh $(TMP)/usr/share/mysql/
 	# lintian overrides
 	mkdir -p $(TMP)/usr/share/lintian/overrides/
 	cp debian/mysql-common.lintian-overrides     $(TMP)/usr/share/lintian/overrides/mysql-common
-	cp debian/mysql-server-5.1.lintian-overrides $(TMP)/usr/share/lintian/overrides/mysql-server-5.1
-	cp debian/mysql-client-5.1.lintian-overrides $(TMP)/usr/share/lintian/overrides/mysql-client-5.1
+	cp debian/mysql-server-5.5.lintian-overrides $(TMP)/usr/share/lintian/overrides/mysql-server-5.5
+	cp debian/mysql-client-5.5.lintian-overrides $(TMP)/usr/share/lintian/overrides/mysql-client-5.5
 
-	# For 5.0 -> 5.1 transition
+	# For 5.0 -> 5.5 transition
 	d=$(TMP)/usr/share/mysql-common/internal-use-only/; \
 	mkdir -p $$d; \
-	cp debian/mysql-server-5.1.mysql.init $$d/_etc_init.d_mysql; \
-	cp debian/mysql-server-5.1.mysql-server.logrotate $$d/_etc_logrotate.d_mysql-server; \
+	cp debian/mysql-server-5.5.mysql.init $$d/_etc_init.d_mysql; \
+	cp debian/mysql-server-5.5.mysql-server.logrotate $$d/_etc_logrotate.d_mysql-server; \
 	cp debian/additions/debian-start $$d/_etc_mysql_debian-start;
 
 	dh_movefiles
@@ -315,7 +315,7 @@ binary-arch: build install
 	dh_compress -a
 	dh_fixperms -a
 	#dh_makeshlibs -a
-	dh_makeshlibs -plibmysqlclient16 -V'libmysqlclient16 (>= 5.1.21-1)'
+	dh_makeshlibs -plibmysqlclient16 -V'libmysqlclient16 (>= 5.5.8-1)'
 	dh_installdeb -a
 	dh_perl -a
 	dh_shlibdeps -a -l debian/libmysqlclient16/usr/lib -L libmysqlclient16

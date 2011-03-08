@@ -1,3 +1,9 @@
+mysql-5.5 (5.5.9-1) unstable; urgency=low
+
+  * Non-maintainer upload.
+
+ -- Sven Paulus <sven@karlsruhe.org>  Tue, 08 Mar 2011 22:34:52 +0100
+
 mysql-5.1 (5.1.49-3) unstable; urgency=high
 
   * SECURITY UPDATE: denial of service via incorrect propagation of type

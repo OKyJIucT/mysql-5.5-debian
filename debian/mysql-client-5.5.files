@@ -21,7 +21,7 @@ usr/bin/mysqltest_embedded
 usr/bin/mysql_waitpid
 usr/bin/perror
 usr/sbin/mysqlmanager
-usr/share/lintian/overrides/mysql-client-5.1
+usr/share/lintian/overrides/mysql-client-5.5
 usr/share/man/man1/innotop.1
 usr/share/man/man1/my_print_defaults.1
 usr/share/man/man1/myisam_ftdump.1
