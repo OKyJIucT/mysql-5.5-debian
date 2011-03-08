@@ -1,36 +1,31 @@
 #! /bin/sh /usr/share/dpatch/dpatch-run
-## 99_fix_testsuite_for_installed_env.dpatch by Steve Beattie <sbeattie@ubuntu.com>
+## 99_fix_testsuite_for_installed_env.dpatch by  <sven@imperator.oops.nntp.de>
 ##
 ## All lines beginning with `## DP:' are a description of the patch.
 ## DP: Fix the mysql testsuite to work in the installed locations
 
 @DPATCH@
-diff -urNad mysql-5.1-5.1.49~/mysql-test/lib/My/ConfigFactory.pm mysql-5.1-5.1.49/mysql-test/lib/My/ConfigFactory.pm
---- mysql-5.1-5.1.49~/mysql-test/lib/My/ConfigFactory.pm	2010-07-09 05:34:55.000000000 -0700
-+++ mysql-5.1-5.1.49/mysql-test/lib/My/ConfigFactory.pm	2010-08-12 16:40:07.000000000 -0700
-@@ -140,10 +140,13 @@
-   return $vardir;
- }
+
+Common subdirectories: mysql-5.5.orig/mysql-test//.svn and mysql-5.5/mysql-test//.svn
+Common subdirectories: mysql-5.5.orig/mysql-test//collections and mysql-5.5/mysql-test//collections
+Common subdirectories: mysql-5.5.orig/mysql-test//extra and mysql-5.5/mysql-test//extra
+Common subdirectories: mysql-5.5.orig/mysql-test//include and mysql-5.5/mysql-test//include
+Common subdirectories: mysql-5.5.orig/mysql-test//lib and mysql-5.5/mysql-test//lib
+diff -u mysql-5.5.orig/mysql-test//mysql-test-run.pl mysql-5.5/mysql-test//mysql-test-run.pl
+--- mysql-5.5.orig/mysql-test//mysql-test-run.pl	2011-03-08 23:00:17.000000000 +0100
++++ mysql-5.5/mysql-test//mysql-test-run.pl	2011-03-08 23:11:30.000000000 +0100
+@@ -3114,6 +3114,10 @@
+     mtr_appendfile_to_file("$sql_dir/mysql_system_tables_data.sql",
+ 			   $bootstrap_sql_file);
  
-+my @std_data_prefixes=("mysql-test", "lib/mysql-testsuite");
++    mtr_tofile($bootstrap_sql_file, "-- Debian removed the default privileges on the 'test' database\n");
++    mtr_tofile($bootstrap_sql_file, "INSERT INTO mysql.db VALUES ('%','test','','Y','Y','Y','Y','Y','Y','N','Y','Y','Y','Y','Y','Y','Y','Y','N','N','Y','Y');\n");
++    
 +
- sub fix_std_data {
-   my ($self, $config, $group_name, $group)= @_;
-   my $basedir= $self->get_basedir($group);
--  return "$basedir/mysql-test/std_data";
-+  return my_find_dir($self->get_basedir($group),
-+		     \@std_data_prefixes, "std_data");
- }
- 
- sub ssl_supported {
-diff -urNad mysql-5.1-5.1.49~/mysql-test/lib/mtr_cases.pm mysql-5.1-5.1.49/mysql-test/lib/mtr_cases.pm
---- mysql-5.1-5.1.49~/mysql-test/lib/mtr_cases.pm	2010-07-09 05:34:53.000000000 -0700
-+++ mysql-5.1-5.1.49/mysql-test/lib/mtr_cases.pm	2010-08-12 16:34:10.000000000 -0700
-@@ -268,6 +268,7 @@
-     {
-       $suitedir= my_find_dir($::basedir,
- 			     ["mysql-test/suite",
-+			      "lib/mysql-testsuite/suite",
- 			      "mysql-test",
- 			      # Look in storage engine specific suite dirs
- 			      "storage/*/mysql-test-suites"
+     # Add test data for timezone - this is just a subset, on a real
+     # system these tables will be populated either by mysql_tzinfo_to_sql
+     # or by downloading the timezone table package from our website
+Common subdirectories: mysql-5.5.orig/mysql-test//r and mysql-5.5/mysql-test//r
+Common subdirectories: mysql-5.5.orig/mysql-test//std_data and mysql-5.5/mysql-test//std_data
+Common subdirectories: mysql-5.5.orig/mysql-test//suite and mysql-5.5/mysql-test//suite
+Common subdirectories: mysql-5.5.orig/mysql-test//t and mysql-5.5/mysql-test//t
